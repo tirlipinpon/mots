@@ -69,6 +69,10 @@ class WordGuessingGame {
         let allWords = Object.keys(this.hints[this.currentDifficulty]);
         let availableWords = this.userManager.getAvailableWords(allWords);
         
+        // Debug : afficher les informations de filtrage
+        console.log(`🔍 Mots ${this.currentDifficulty}: ${allWords.length} total, ${availableWords.length} disponibles`);
+        console.log(`📝 Mots déjà trouvés: [${this.userManager.getWordsFound().join(', ')}]`);
+        
         // Si l'utilisateur a trouvé tous les mots de cette difficulté, réinitialiser
         if (availableWords.length === 0) {
             this.userManager.wordsFound = [];
@@ -435,7 +439,7 @@ class WordGuessingGame {
         this.currentLevel++;
         
         // Sauvegarder le mot trouvé et les statistiques
-        this.userManager.addWordFound(this.currentWord);
+        this.userManager.addWordFound(this.currentWord, this.currentDifficulty);
         this.userManager.updateStats({
             totalWordsFound: this.totalWordsFound,
             wordTimes: this.wordTimes,
@@ -496,12 +500,12 @@ class WordGuessingGame {
         // Temps moyen
         if (this.wordTimes.length > 0) {
             const avgTime = Math.round(this.wordTimes.reduce((a, b) => a + b, 0) / this.wordTimes.length);
-            document.getElementById('avgTime').textContent = avgTime + 's';
+            document.getElementById('avgTime').textContent = this.formatTime(avgTime);
         }
         
         // Meilleur temps
         if (this.bestTime !== null) {
-            document.getElementById('bestTime').textContent = this.bestTime + 's';
+            document.getElementById('bestTime').textContent = this.formatTime(this.bestTime);
         }
         
         // Série actuelle
@@ -734,8 +738,8 @@ class WordGuessingGame {
         
         difficulties.forEach(difficulty => {
             const allWords = Object.keys(this.hints[difficulty]);
-            const foundWords = this.userManager.getWordsFound();
-            const foundCount = allWords.filter(word => foundWords.includes(word)).length;
+            const foundWordsInDifficulty = this.userManager.getWordsFoundByDifficulty(difficulty);
+            const foundCount = foundWordsInDifficulty.length;
             
             const countElement = document.getElementById(`${difficulty}Count`);
             countElement.textContent = `(${foundCount}/${allWords.length})`;
@@ -779,6 +783,17 @@ class WordGuessingGame {
     updateLevelStatus() {
         const levelStatus = document.getElementById('levelStatus');
         levelStatus.textContent = `Niveau ${this.currentLevel}`;
+    }
+
+    // Formater le temps en format lisible
+    formatTime(seconds) {
+        if (seconds < 60) {
+            return `${seconds}s`;
+        } else {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}m ${remainingSeconds}s`;
+        }
     }
 
     // Mettre à jour le statut de difficulté dans l'en-tête
