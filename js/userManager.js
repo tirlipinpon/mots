@@ -3,6 +3,11 @@ class UserManager {
     constructor() {
         this.currentUser = null;
         this.wordsFound = [];
+        this.wordsFoundByDifficulty = {
+            easy: [],
+            medium: [],
+            hard: []
+        };
         this.userStats = {
             totalWordsFound: 0,
             wordTimes: [],
@@ -44,6 +49,12 @@ class UserManager {
             this.wordsFound = JSON.parse(wordsFoundCookie);
         }
 
+        // Charger les mots trouvés par difficulté
+        const wordsByDifficultyCookie = this.getCookie(`wordsByDifficulty_${this.currentUser}`);
+        if (wordsByDifficultyCookie) {
+            this.wordsFoundByDifficulty = { ...this.wordsFoundByDifficulty, ...JSON.parse(wordsByDifficultyCookie) };
+        }
+
         // Charger les statistiques
         const statsCookie = this.getCookie(`stats_${this.currentUser}`);
         if (statsCookie) {
@@ -58,18 +69,31 @@ class UserManager {
         // Sauvegarder les mots trouvés
         this.setCookie(`words_${this.currentUser}`, JSON.stringify(this.wordsFound), 365);
 
+        // Sauvegarder les mots trouvés par difficulté
+        this.setCookie(`wordsByDifficulty_${this.currentUser}`, JSON.stringify(this.wordsFoundByDifficulty), 365);
+
         // Sauvegarder les statistiques
         this.setCookie(`stats_${this.currentUser}`, JSON.stringify(this.userStats), 365);
     }
 
     // Ajouter un mot trouvé
-    addWordFound(word) {
+    addWordFound(word, difficulty = null) {
         if (!this.currentUser) return;
         
         if (!this.wordsFound.includes(word)) {
             this.wordsFound.push(word);
-            this.saveUserData();
         }
+        
+        if (difficulty && !this.wordsFoundByDifficulty[difficulty].includes(word)) {
+            this.wordsFoundByDifficulty[difficulty].push(word);
+        }
+        
+        this.saveUserData();
+    }
+
+    // Obtenir les mots trouvés par difficulté
+    getWordsFoundByDifficulty(difficulty) {
+        return this.wordsFoundByDifficulty[difficulty] || [];
     }
 
     // Mettre à jour les statistiques
@@ -82,9 +106,7 @@ class UserManager {
 
     // Obtenir les mots disponibles (excluant ceux déjà trouvés)
     getAvailableWords(allWords) {
-        if (!this.currentUser) {
-            return allWords;
-        }
+        // Toujours filtrer les mots déjà trouvés, même sans connexion
         return allWords.filter(word => !this.wordsFound.includes(word));
     }
 
