@@ -3,8 +3,9 @@ class WordGuessingGame {
         // Utiliser les données externes
         this.hints = GAME_DATA;
         
-        // Initialiser le gestionnaire d'utilisateurs
+        // Initialiser les gestionnaires
         this.userManager = new UserManager();
+        this.statsManager = new StatsManager();
         
         this.currentWord = '';
         this.currentLevel = 1;
@@ -26,9 +27,17 @@ class WordGuessingGame {
         // État du mot actuel
         this.isCurrentWordCorrect = false;
         
+        // Variable pour stocker la valeur précédente de l'input
+        this.previousInputValue = '';
+        
         this.initializeGame();
         this.setupEventListeners();
         this.updateDifficultyCounts();
+        this.updateLoginStatus();
+        this.updateLevelStatus();
+        this.updateDifficultyStatus();
+        this.loadUserPreferences();
+        this.statsManager.loadStats();
     }
 
     // Fonction pour normaliser les accents
@@ -114,6 +123,31 @@ class WordGuessingGame {
             wordInput.value = input; // Mettre à jour la valeur de l'input
         }
         
+        // Vérifier si on essaie de supprimer des lettres vertes consécutives depuis le début
+        if (input.length < this.previousInputValue.length) {
+            // L'utilisateur a supprimé des caractères
+            const deletedLength = this.previousInputValue.length - input.length;
+            
+            // Vérifier les lettres vertes consécutives depuis le début
+            let consecutiveGreenCount = 0;
+            for (let i = 0; i < this.previousInputValue.length; i++) {
+                if (letterBoxes[i] && letterBoxes[i].classList.contains('letter-correct')) {
+                    consecutiveGreenCount++;
+                } else {
+                    break; // Arrêter dès qu'on trouve une lettre non verte
+                }
+            }
+            
+            // Si on essaie de supprimer des lettres vertes consécutives depuis le début
+            if (deletedLength > 0 && input.length < consecutiveGreenCount) {
+                // Restaurer la valeur précédente
+                wordInput.value = this.previousInputValue;
+                input = this.previousInputValue;
+                this.showFeedback('Tu ne peux pas supprimer les lettres vertes ! 🚫', 'warning');
+                return;
+            }
+        }
+        
         // Ajouter une classe visuelle pendant la frappe
         if (input.length > 0) {
             wordInput.classList.add('typing');
@@ -186,6 +220,9 @@ class WordGuessingGame {
         } else {
             this.showFeedback(`Trop de lettres ! Le mot fait ${this.currentWord.length} lettres 📏`, 'warning');
         }
+        
+        // Mettre à jour la valeur précédente pour la prochaine vérification
+        this.previousInputValue = input;
     }
 
     startTimer() {
@@ -209,7 +246,6 @@ class WordGuessingGame {
                 this.newGame();
             }
         });
-        document.getElementById('statsToggleBtn').addEventListener('click', () => this.toggleStats());
         
         // Event listeners pour la connexion
         document.getElementById('loginBtn').addEventListener('click', () => this.handleLogin());
@@ -224,6 +260,11 @@ class WordGuessingGame {
         document.getElementById('easyBtn').addEventListener('click', () => this.setDifficulty('easy'));
         document.getElementById('mediumBtn').addEventListener('click', () => this.setDifficulty('medium'));
         document.getElementById('hardBtn').addEventListener('click', () => this.setDifficulty('hard'));
+        
+        // Event listeners pour les toggles
+        document.getElementById('loginToggle').addEventListener('click', () => this.toggleSection('login'));
+        document.getElementById('scoreToggle').addEventListener('click', () => this.toggleSection('score'));
+        document.getElementById('difficultyToggle').addEventListener('click', () => this.toggleSection('difficulty'));
         
         const wordInput = document.getElementById('wordInput');
         
@@ -406,12 +447,17 @@ class WordGuessingGame {
             stars: this.stars,
             currentLevel: this.currentLevel
         });
+
+        // Ajouter aux statistiques avancées
+        const isPerfect = this.attempts === 1;
+        this.statsManager.addWordFound(this.currentWord, this.currentDifficulty, timeElapsed, this.attempts, isPerfect);
         
         this.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
         this.showStars(starsEarned);
         this.updateScore();
         this.updateStats();
         this.updateDifficultyCounts(); // Mettre à jour les compteurs de difficulté
+        this.updateLevelStatus(); // Mettre à jour le niveau dans l'en-tête
         this.createCelebration();
         
         // Vider le champ de saisie
@@ -440,7 +486,6 @@ class WordGuessingGame {
     updateScore() {
         document.getElementById('stars').textContent = this.stars;
         document.getElementById('level').textContent = this.currentLevel;
-        document.getElementById('levelIndicator').textContent = `Niveau ${this.currentLevel}`;
         document.getElementById('wordsFound').textContent = this.totalWordsFound;
     }
 
@@ -470,24 +515,35 @@ class WordGuessingGame {
             const accuracy = Math.round((this.correctAttempts / this.totalAttempts) * 100);
             document.getElementById('accuracy').textContent = accuracy + '%';
         }
-    }
 
-    toggleStats() {
-        const statsSection = document.getElementById('statsSection');
-        const toggleBtn = document.getElementById('statsToggleBtn');
+        // Nouvelles statistiques avancées
+        const advancedStats = this.statsManager.getAllStats();
         
-        if (statsSection.classList.contains('hidden')) {
-            // Afficher les statistiques
-            statsSection.classList.remove('hidden');
-            toggleBtn.textContent = '📊 Masquer les Statistiques';
-            toggleBtn.classList.add('active');
+        // Mots par difficulté
+        document.getElementById('wordsEasy').textContent = advancedStats.wordsByDifficulty.easy;
+        document.getElementById('wordsMedium').textContent = advancedStats.wordsByDifficulty.medium;
+        document.getElementById('wordsHard').textContent = advancedStats.wordsByDifficulty.hard;
+        
+        // Temps de jeu
+        document.getElementById('sessionTime').textContent = this.statsManager.formatTime(advancedStats.sessionTime);
+        document.getElementById('totalGameTime').textContent = this.statsManager.formatTime(advancedStats.totalGameTime);
+        
+        // Perfect games
+        document.getElementById('perfectGames').textContent = advancedStats.perfectGames;
+        
+        // Progression
+        document.getElementById('progressionTrend').textContent = advancedStats.progressionTrend;
+        
+        // Lettres difficiles
+        const difficultLetters = advancedStats.difficultLetters;
+        if (difficultLetters.length > 0) {
+            const topLetter = difficultLetters[0];
+            document.getElementById('difficultLetters').textContent = `${topLetter.letter} (${topLetter.errors})`;
         } else {
-            // Masquer les statistiques
-            statsSection.classList.add('hidden');
-            toggleBtn.textContent = '📈 Voir les Statistiques';
-            toggleBtn.classList.remove('active');
+            document.getElementById('difficultLetters').textContent = '-';
         }
     }
+
 
     showFeedback(message, type) {
         const feedback = document.getElementById('feedback');
@@ -522,6 +578,7 @@ class WordGuessingGame {
         
         // Réinitialiser l'état
         this.isCurrentWordCorrect = false;
+        this.previousInputValue = ''; // Réinitialiser la valeur précédente
         
         this.stopTimer();
         this.selectRandomWord();
@@ -576,6 +633,7 @@ class WordGuessingGame {
             this.showLoginSuccess();
             this.loadUserData();
             this.showFeedback(`Bienvenue ${username} ! Tes données ont été chargées.`, 'success');
+            this.updateLoginStatus();
         } else {
             this.showFeedback('Erreur lors de la connexion.', 'error');
         }
@@ -586,6 +644,7 @@ class WordGuessingGame {
         this.userManager.logout();
         this.showLoginForm();
         this.resetGameStats();
+        this.updateLoginStatus();
         this.showFeedback('Déconnexion réussie. Tes données sont sauvegardées.', 'info');
     }
 
@@ -621,6 +680,7 @@ class WordGuessingGame {
             this.updateScore();
             this.updateStats();
             this.updateDifficultyCounts(); // Mettre à jour les compteurs de difficulté
+            this.updateLevelStatus(); // Mettre à jour le niveau dans l'en-tête
         }
     }
 
@@ -658,8 +718,14 @@ class WordGuessingGame {
         };
         this.showFeedback(`Niveau changé : ${difficultyNames[difficulty]}`, 'info');
         
+        // Mettre à jour le statut de difficulté
+        this.updateDifficultyStatus();
+        
         // Redémarrer le jeu avec la nouvelle difficulté
         this.newGame();
+        
+        // Sauvegarder les préférences
+        this.saveUserPreferences();
     }
 
     // Mettre à jour les compteurs de mots par difficulté
@@ -669,11 +735,115 @@ class WordGuessingGame {
         difficulties.forEach(difficulty => {
             const allWords = Object.keys(this.hints[difficulty]);
             const foundWords = this.userManager.getWordsFound();
-            const availableWords = allWords.filter(word => !foundWords.includes(word));
             const foundCount = allWords.filter(word => foundWords.includes(word)).length;
             
             const countElement = document.getElementById(`${difficulty}Count`);
             countElement.textContent = `(${foundCount}/${allWords.length})`;
+        });
+    }
+
+    // Toggle des sections
+    toggleSection(sectionName) {
+        const toggleHeader = document.getElementById(`${sectionName}Toggle`);
+        const toggleContent = document.getElementById(`${sectionName}Content`);
+        const toggleIcon = toggleHeader.querySelector('.toggle-icon');
+        
+        if (toggleContent.classList.contains('hidden')) {
+            // Ouvrir la section
+            toggleContent.classList.remove('hidden');
+            toggleHeader.classList.add('active');
+            toggleIcon.textContent = '−';
+        } else {
+            // Fermer la section
+            toggleContent.classList.add('hidden');
+            toggleHeader.classList.remove('active');
+            toggleIcon.textContent = '+';
+        }
+        
+        // Sauvegarder les préférences
+        this.saveUserPreferences();
+    }
+
+    // Mettre à jour le statut de connexion dans l'en-tête
+    updateLoginStatus() {
+        const loginStatus = document.getElementById('loginStatus');
+        if (this.userManager.isLoggedIn()) {
+            const username = this.userManager.getCurrentUser();
+            loginStatus.textContent = `Connecté: ${username}`;
+        } else {
+            loginStatus.textContent = 'Non connecté';
+        }
+    }
+
+    // Mettre à jour le niveau dans l'en-tête
+    updateLevelStatus() {
+        const levelStatus = document.getElementById('levelStatus');
+        levelStatus.textContent = `Niveau ${this.currentLevel}`;
+    }
+
+    // Mettre à jour le statut de difficulté dans l'en-tête
+    updateDifficultyStatus() {
+        const difficultyStatus = document.getElementById('difficultyStatus');
+        const difficultyNames = {
+            'easy': 'Facile',
+            'medium': 'Moyen', 
+            'hard': 'Difficile'
+        };
+        difficultyStatus.textContent = difficultyNames[this.currentDifficulty];
+    }
+
+    // Charger les préférences utilisateur
+    loadUserPreferences() {
+        const preferences = this.userManager.getUserPreferences();
+        
+        // Restaurer l'état des sections toggleables
+        Object.keys(preferences.toggledSections).forEach(sectionName => {
+            const isOpen = preferences.toggledSections[sectionName];
+            const toggleHeader = document.getElementById(`${sectionName}Toggle`);
+            const toggleContent = document.getElementById(`${sectionName}Content`);
+            const toggleIcon = toggleHeader.querySelector('.toggle-icon');
+            
+            if (isOpen) {
+                toggleContent.classList.remove('hidden');
+                toggleHeader.classList.add('active');
+                toggleIcon.textContent = '−';
+            } else {
+                toggleContent.classList.add('hidden');
+                toggleHeader.classList.remove('active');
+                toggleIcon.textContent = '+';
+            }
+        });
+        
+        // Restaurer la difficulté sélectionnée
+        this.currentDifficulty = preferences.selectedDifficulty;
+        this.updateDifficultyButtons();
+        this.updateDifficultyStatus();
+    }
+
+    // Sauvegarder les préférences utilisateur
+    saveUserPreferences() {
+        const preferences = {
+            toggledSections: {
+                login: !document.getElementById('loginContent').classList.contains('hidden'),
+                score: !document.getElementById('scoreContent').classList.contains('hidden'),
+                difficulty: !document.getElementById('difficultyContent').classList.contains('hidden')
+            },
+            selectedDifficulty: this.currentDifficulty
+        };
+        
+        this.userManager.saveUserPreferences(preferences);
+    }
+
+    // Mettre à jour les boutons de difficulté
+    updateDifficultyButtons() {
+        const difficulties = ['easy', 'medium', 'hard'];
+        difficulties.forEach(difficulty => {
+            const btn = document.getElementById(`${difficulty}Btn`);
+            if (difficulty === this.currentDifficulty) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         });
     }
 }

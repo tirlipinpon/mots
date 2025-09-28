@@ -10,90 +10,143 @@
     <div class="game-container">
         <h1>🎮 Devine le Mot ! 🎮</h1>
         
-        <div class="login-section" id="loginSection">
-            <div class="login-form">
-                <h3>👤 Connexion (optionnel)</h3>
-                <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
-                <button class="btn" id="loginBtn">Se connecter</button>
-                <div class="user-info hidden" id="userInfo">
-                    <span>Connecté en tant que : <strong id="currentUser"></strong></span>
-                    <button class="btn-small" id="logoutBtn">Déconnexion</button>
+        <div class="toggle-section">
+            <div class="toggle-header" id="loginToggle">
+                <div class="toggle-header-info">
+                    <h3>👤 Connexion</h3>
+                    <span class="toggle-subtitle" id="loginStatus">Non connecté</span>
+                </div>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="toggle-content hidden" id="loginContent">
+                <div class="login-form">
+                    <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
+                    <button class="btn" id="loginBtn">Se connecter</button>
+                    <div class="user-info hidden" id="userInfo">
+                        <span>Connecté en tant que : <strong id="currentUser"></strong></span>
+                        <button class="btn-small" id="logoutBtn">Déconnexion</button>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="score-board">
-            <div class="score-item">
-                <h3>⭐ Étoiles</h3>
-                <div class="score-value" id="stars">0</div>
+        <div class="toggle-section">
+            <div class="toggle-header" id="scoreToggle">
+                <div class="toggle-header-info">
+                    <h3>📊 Score et Statistiques</h3>
+                    <span class="toggle-subtitle" id="levelStatus">Niveau 1</span>
+                </div>
+                <span class="toggle-icon">+</span>
             </div>
-            <div class="score-item">
-                <h3>🏆 Niveau</h3>
-                <div class="score-value" id="level">1</div>
-            </div>
-            <div class="score-item">
-                <h3>⏱️ Temps</h3>
-                <div class="score-value" id="timer">0s</div>
-            </div>
-            <div class="score-item">
-                <h3>📊 Mots</h3>
-                <div class="score-value" id="wordsFound">0</div>
+            <div class="toggle-content hidden" id="scoreContent">
+                <div class="score-board">
+                    <div class="score-item">
+                        <h3>⭐ Étoiles</h3>
+                        <div class="score-value" id="stars">0</div>
+                    </div>
+                    <div class="score-item">
+                        <h3>🏆 Niveau</h3>
+                        <div class="score-value" id="level">1</div>
+                    </div>
+                    <div class="score-item">
+                        <h3>⏱️ Temps</h3>
+                        <div class="score-value" id="timer">0s</div>
+                    </div>
+                    <div class="score-item">
+                        <h3>📊 Mots</h3>
+                        <div class="score-value" id="wordsFound">0</div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <!-- Statistiques de base -->
+                    <div class="stat-item">
+                        <div class="stat-label">Mots trouvés</div>
+                        <div class="stat-value" id="totalWords">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Temps moyen</div>
+                        <div class="stat-value" id="avgTime">0s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Meilleur temps</div>
+                        <div class="stat-value" id="bestTime">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Série actuelle</div>
+                        <div class="stat-value" id="currentStreak">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Meilleure série</div>
+                        <div class="stat-value" id="bestStreak">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Précision</div>
+                        <div class="stat-value" id="accuracy">0%</div>
+                    </div>
+                    
+                    <!-- Nouvelles statistiques -->
+                    <div class="stat-item">
+                        <div class="stat-label">Mots Facile</div>
+                        <div class="stat-value" id="wordsEasy">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Mots Moyen</div>
+                        <div class="stat-value" id="wordsMedium">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Mots Difficile</div>
+                        <div class="stat-value" id="wordsHard">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Temps session</div>
+                        <div class="stat-value" id="sessionTime">0s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Temps total</div>
+                        <div class="stat-value" id="totalGameTime">0s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Perfect games</div>
+                        <div class="stat-value" id="perfectGames">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Progression</div>
+                        <div class="stat-value" id="progressionTrend">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Lettres difficiles</div>
+                        <div class="stat-value" id="difficultLetters">-</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="difficulty-section">
-            <h3>🎯 Niveau de Difficulté</h3>
-            <div class="difficulty-buttons">
-                <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
-                    🟢 Facile
-                    <span class="words-count" id="easyCount">(0/0)</span>
-                </button>
-                <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
-                    🟠 Moyen
-                    <span class="words-count" id="mediumCount">(0/0)</span>
-                </button>
-                <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
-                    🔴 Difficile
-                    <span class="words-count" id="hardCount">(0/0)</span>
-                </button>
+        <div class="toggle-section">
+            <div class="toggle-header" id="difficultyToggle">
+                <div class="toggle-header-info">
+                    <h3>🎯 Niveau de Difficulté</h3>
+                    <span class="toggle-subtitle" id="difficultyStatus">Facile</span>
+                </div>
+                <span class="toggle-icon">+</span>
             </div>
-        </div>
-        
-        <div class="stats-toggle-section">
-            <button class="btn stats-toggle-btn" id="statsToggleBtn">📈 Voir les Statistiques</button>
-        </div>
-
-        <div class="stats-section hidden" id="statsSection">
-            <h3>📈 Statistiques</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">Mots trouvés</div>
-                    <div class="stat-value" id="totalWords">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Temps moyen</div>
-                    <div class="stat-value" id="avgTime">0s</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Meilleur temps</div>
-                    <div class="stat-value" id="bestTime">-</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Série actuelle</div>
-                    <div class="stat-value" id="currentStreak">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Meilleure série</div>
-                    <div class="stat-value" id="bestStreak">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">Précision</div>
-                    <div class="stat-value" id="accuracy">0%</div>
+            <div class="toggle-content hidden" id="difficultyContent">
+                <div class="difficulty-buttons">
+                    <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
+                        🟢 Facile
+                        <span class="words-count" id="easyCount">(0/0)</span>
+                    </button>
+                    <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
+                        🟠 Moyen
+                        <span class="words-count" id="mediumCount">(0/0)</span>
+                    </button>
+                    <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
+                        🔴 Difficile
+                        <span class="words-count" id="hardCount">(0/0)</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="level-indicator" id="levelIndicator">Niveau 1</div>
 
         <div class="hint-section" id="hintSection">
             <div class="hint-title">💡 Indice :</div>
@@ -121,6 +174,7 @@
 
     <script src="js/data.js"></script>
     <script src="js/userManager.js"></script>
+    <script src="js/statsManager.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

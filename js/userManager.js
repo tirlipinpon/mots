@@ -152,4 +152,25 @@ class UserManager {
     deleteCookie(name) {
         document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
     }
+
+    // Sauvegarder les préférences utilisateur
+    saveUserPreferences(preferences) {
+        this.setCookie('userPreferences', JSON.stringify(preferences), 365);
+    }
+
+    // Charger les préférences utilisateur
+    getUserPreferences() {
+        const prefsCookie = this.getCookie('userPreferences');
+        if (prefsCookie) {
+            return JSON.parse(prefsCookie);
+        }
+        return {
+            toggledSections: {
+                login: false,
+                score: false,
+                difficulty: false
+            },
+            selectedDifficulty: 'easy'
+        };
+    }
 }
