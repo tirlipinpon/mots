@@ -19,6 +19,9 @@ class WordGuessingGame {
         this.totalAttempts = 0;
         this.correctAttempts = 0;
         
+        // État du mot actuel
+        this.isCurrentWordCorrect = false;
+        
         this.initializeGame();
         this.setupEventListeners();
     }
@@ -36,6 +39,9 @@ class WordGuessingGame {
         this.selectRandomWord();
         this.updateDisplay();
         this.startTimer();
+        
+        // Désactiver le bouton "Nouveau Mot" au démarrage
+        this.disableNextWordButton();
         
         // Focus automatique au démarrage
         setTimeout(() => {
@@ -113,13 +119,8 @@ class WordGuessingGame {
                 // Vérifier si la lettre était déjà correcte (verte)
                 const wasCorrect = letterBox.classList.contains('letter-correct');
                 
-                // Si la lettre change et qu'elle était correcte, la réinitialiser
-                if (wasCorrect && letterBox.textContent !== input[i].toUpperCase()) {
-                    letterBox.className = 'letter-box';
-                }
-                
-                // Mettre à jour le contenu seulement si ce n'était pas une lettre correcte fixée
-                if (!wasCorrect) {
+                // Si la lettre change, toujours réinitialiser et mettre à jour
+                if (letterBox.textContent !== input[i].toUpperCase()) {
                     letterBox.textContent = input[i].toUpperCase();
                     letterBox.className = 'letter-box';
                 }
@@ -187,7 +188,11 @@ class WordGuessingGame {
     }
 
     setupEventListeners() {
-        document.getElementById('newGameBtn').addEventListener('click', () => this.newGame());
+        document.getElementById('newGameBtn').addEventListener('click', () => {
+            if (this.isCurrentWordCorrect) {
+                this.newGame();
+            }
+        });
         document.getElementById('statsToggleBtn').addEventListener('click', () => this.toggleStats());
         
         const wordInput = document.getElementById('wordInput');
@@ -197,28 +202,26 @@ class WordGuessingGame {
             this.updateDisplayInRealTime(e.target.value);
         });
         
-        // Détection quand le mot est complet et correct (sans changement automatique)
+        // Détection quand le mot est complet et correct (sans passage automatique)
         wordInput.addEventListener('input', (e) => {
             const input = e.target.value;
             const normalizedInput = this.normalizeText(input);
             const normalizedWord = this.normalizeText(this.currentWord);
             
             if (input.length === this.currentWord.length && normalizedInput === normalizedWord) {
-                // Mot correct détecté - juste afficher la victoire
-                this.handleWin();
+                // Mot correct détecté - afficher la victoire mais ne pas passer automatiquement
+                this.showCorrectWord();
             }
         });
 
-        // Détection de la touche Entrée pour nouveau mot
+        // Détection de la touche Entrée pour nouveau mot (seulement si correct)
         wordInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                const input = e.target.value;
-                const normalizedInput = this.normalizeText(input);
-                const normalizedWord = this.normalizeText(this.currentWord);
-                
-                // Si le mot est correct, passer au suivant
-                if (input.length === this.currentWord.length && normalizedInput === normalizedWord) {
+                if (this.isCurrentWordCorrect) {
                     this.newGame();
+                } else {
+                    // Si le mot n'est pas correct, afficher un message d'encouragement
+                    this.showFeedback('Continue ! Tu n\'as pas encore trouvé le bon mot ! 💪', 'warning');
                 }
             }
         });
@@ -311,6 +314,25 @@ class WordGuessingGame {
         return feedback;
     }
 
+    showCorrectWord() {
+        this.stopTimer();
+        const timeElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+        
+        // Marquer le mot comme correct
+        this.isCurrentWordCorrect = true;
+        
+        this.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
+        this.createCelebration();
+        
+        // Vider le champ de saisie
+        const input = document.getElementById('wordInput');
+        input.value = '';
+        input.classList.remove('typing');
+        
+        // Activer le bouton "Nouveau Mot"
+        this.enableNextWordButton();
+    }
+
     handleWin() {
         this.stopTimer();
         const timeElapsed = Math.floor((Date.now() - this.startTime) / 1000);
@@ -351,8 +373,6 @@ class WordGuessingGame {
         const input = document.getElementById('wordInput');
         input.value = '';
         input.classList.remove('typing');
-        
-        // Ne pas changer automatiquement - attendre que l'utilisateur clique sur "Nouveau Mot"
     }
 
     showStars(count) {
@@ -450,6 +470,14 @@ class WordGuessingGame {
     }
 
     newGame() {
+        // Mettre à jour les statistiques du mot précédent si il était correct
+        if (this.isCurrentWordCorrect) {
+            this.handleWin();
+        }
+        
+        // Réinitialiser l'état
+        this.isCurrentWordCorrect = false;
+        
         this.stopTimer();
         this.selectRandomWord();
         this.updateDisplay();
@@ -465,9 +493,28 @@ class WordGuessingGame {
             letterBoxes[i].className = 'letter-box';
         }
         
+        // Désactiver le bouton "Nouveau Mot"
+        this.disableNextWordButton();
+        
         // Focus automatique sur le champ de saisie
         const wordInput = document.getElementById('wordInput');
         wordInput.focus();
+    }
+
+    enableNextWordButton() {
+        const newGameBtn = document.getElementById('newGameBtn');
+        newGameBtn.disabled = false;
+        newGameBtn.style.opacity = '1';
+        newGameBtn.style.cursor = 'pointer';
+        newGameBtn.textContent = 'Nouveau Mot';
+    }
+
+    disableNextWordButton() {
+        const newGameBtn = document.getElementById('newGameBtn');
+        newGameBtn.disabled = true;
+        newGameBtn.style.opacity = '0.5';
+        newGameBtn.style.cursor = 'not-allowed';
+        newGameBtn.textContent = 'Trouve le mot d\'abord !';
     }
 }
 
