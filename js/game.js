@@ -3,9 +3,13 @@ class WordGuessingGame {
         // Utiliser les données externes
         this.hints = GAME_DATA;
         
+        // Initialiser le gestionnaire d'utilisateurs
+        this.userManager = new UserManager();
+        
         this.currentWord = '';
         this.currentLevel = 1;
         this.stars = 0;
+        this.currentDifficulty = 'easy'; // Difficulté actuelle
         this.startTime = 0;
         this.timerInterval = null;
         this.attempts = 0;
@@ -24,6 +28,7 @@ class WordGuessingGame {
         
         this.initializeGame();
         this.setupEventListeners();
+        this.updateDifficultyCounts();
     }
 
     // Fonction pour normaliser les accents
@@ -51,14 +56,15 @@ class WordGuessingGame {
     }
 
     selectRandomWord() {
-        // Sélectionner un mot selon le niveau
-        let availableWords = Object.keys(this.hints);
-        if (this.currentLevel <= 2) {
-            availableWords = availableWords.filter(word => word.length === 4);
-        } else if (this.currentLevel <= 4) {
-            availableWords = availableWords.filter(word => word.length <= 5);
-        } else {
-            availableWords = availableWords.filter(word => word.length <= 6);
+        // Obtenir les mots de la difficulté sélectionnée
+        let allWords = Object.keys(this.hints[this.currentDifficulty]);
+        let availableWords = this.userManager.getAvailableWords(allWords);
+        
+        // Si l'utilisateur a trouvé tous les mots de cette difficulté, réinitialiser
+        if (availableWords.length === 0) {
+            this.userManager.wordsFound = [];
+            availableWords = allWords;
+            this.showFeedback(`🎉 Félicitations ! Tu as trouvé tous les mots du niveau ${this.currentDifficulty} ! Recommençons ! 🎉`, 'success');
         }
         
         this.currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
@@ -68,13 +74,13 @@ class WordGuessingGame {
         this.updateHint();
         
         // Debug : afficher le mot dans la console
-        console.log(`🎮 MOT À DEVINER: "${this.currentWord.toUpperCase()}" (Niveau ${this.currentLevel})`);
+        console.log(`🎮 MOT À DEVINER: "${this.currentWord.toUpperCase()}" (Difficulté: ${this.currentDifficulty})`);
     }
 
     updateHint() {
         const hintText = document.getElementById('hintText');
-        if (this.hints[this.currentWord]) {
-            hintText.textContent = this.hints[this.currentWord];
+        if (this.hints[this.currentDifficulty][this.currentWord]) {
+            hintText.textContent = this.hints[this.currentDifficulty][this.currentWord];
         } else {
             hintText.textContent = 'Devine le mot !';
         }
@@ -82,7 +88,11 @@ class WordGuessingGame {
 
     updateDisplay() {
         const wordDisplay = document.getElementById('wordDisplay');
+        const wordInput = document.getElementById('wordInput');
         wordDisplay.innerHTML = '';
+        
+        // Mettre à jour la longueur maximale de l'input
+        wordInput.maxLength = this.currentWord.length;
         
         for (let i = 0; i < this.currentWord.length; i++) {
             const letterBox = document.createElement('div');
@@ -95,8 +105,14 @@ class WordGuessingGame {
     updateDisplayInRealTime(inputValue) {
         const wordDisplay = document.getElementById('wordDisplay');
         const letterBoxes = wordDisplay.children;
-        const input = inputValue;
         const wordInput = document.getElementById('wordInput');
+        
+        // Limiter la longueur de l'input à la longueur du mot
+        let input = inputValue;
+        if (input.length > this.currentWord.length) {
+            input = input.substring(0, this.currentWord.length);
+            wordInput.value = input; // Mettre à jour la valeur de l'input
+        }
         
         // Ajouter une classe visuelle pendant la frappe
         if (input.length > 0) {
@@ -194,6 +210,20 @@ class WordGuessingGame {
             }
         });
         document.getElementById('statsToggleBtn').addEventListener('click', () => this.toggleStats());
+        
+        // Event listeners pour la connexion
+        document.getElementById('loginBtn').addEventListener('click', () => this.handleLogin());
+        document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
+        document.getElementById('usernameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.handleLogin();
+            }
+        });
+        
+        // Event listeners pour la difficulté
+        document.getElementById('easyBtn').addEventListener('click', () => this.setDifficulty('easy'));
+        document.getElementById('mediumBtn').addEventListener('click', () => this.setDifficulty('medium'));
+        document.getElementById('hardBtn').addEventListener('click', () => this.setDifficulty('hard'));
         
         const wordInput = document.getElementById('wordInput');
         
@@ -363,10 +393,25 @@ class WordGuessingGame {
         this.stars += starsEarned;
         this.currentLevel++;
         
+        // Sauvegarder le mot trouvé et les statistiques
+        this.userManager.addWordFound(this.currentWord);
+        this.userManager.updateStats({
+            totalWordsFound: this.totalWordsFound,
+            wordTimes: this.wordTimes,
+            bestTime: this.bestTime,
+            currentStreak: this.currentStreak,
+            bestStreak: this.bestStreak,
+            totalAttempts: this.totalAttempts,
+            correctAttempts: this.correctAttempts,
+            stars: this.stars,
+            currentLevel: this.currentLevel
+        });
+        
         this.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
         this.showStars(starsEarned);
         this.updateScore();
         this.updateStats();
+        this.updateDifficultyCounts(); // Mettre à jour les compteurs de difficulté
         this.createCelebration();
         
         // Vider le champ de saisie
@@ -515,6 +560,121 @@ class WordGuessingGame {
         newGameBtn.style.opacity = '0.5';
         newGameBtn.style.cursor = 'not-allowed';
         newGameBtn.textContent = 'Trouve le mot d\'abord !';
+    }
+
+    // Gestion de la connexion
+    handleLogin() {
+        const usernameInput = document.getElementById('usernameInput');
+        const username = usernameInput.value.trim();
+        
+        if (!username) {
+            this.showFeedback('Veuillez entrer un nom !', 'error');
+            return;
+        }
+        
+        if (this.userManager.login(username)) {
+            this.showLoginSuccess();
+            this.loadUserData();
+            this.showFeedback(`Bienvenue ${username} ! Tes données ont été chargées.`, 'success');
+        } else {
+            this.showFeedback('Erreur lors de la connexion.', 'error');
+        }
+    }
+
+    // Gestion de la déconnexion
+    handleLogout() {
+        this.userManager.logout();
+        this.showLoginForm();
+        this.resetGameStats();
+        this.showFeedback('Déconnexion réussie. Tes données sont sauvegardées.', 'info');
+    }
+
+    // Afficher le formulaire de connexion
+    showLoginForm() {
+        document.getElementById('usernameInput').style.display = 'inline-block';
+        document.getElementById('loginBtn').style.display = 'inline-block';
+        document.getElementById('userInfo').classList.add('hidden');
+    }
+
+    // Afficher les informations utilisateur
+    showLoginSuccess() {
+        document.getElementById('usernameInput').style.display = 'none';
+        document.getElementById('loginBtn').style.display = 'none';
+        document.getElementById('userInfo').classList.remove('hidden');
+        document.getElementById('currentUser').textContent = this.userManager.getCurrentUser();
+    }
+
+    // Charger les données utilisateur
+    loadUserData() {
+        if (this.userManager.isLoggedIn()) {
+            const userStats = this.userManager.getUserStats();
+            this.totalWordsFound = userStats.totalWordsFound;
+            this.wordTimes = userStats.wordTimes;
+            this.bestTime = userStats.bestTime;
+            this.currentStreak = userStats.currentStreak;
+            this.bestStreak = userStats.bestStreak;
+            this.totalAttempts = userStats.totalAttempts;
+            this.correctAttempts = userStats.correctAttempts;
+            this.stars = userStats.stars;
+            this.currentLevel = userStats.currentLevel;
+            
+            this.updateScore();
+            this.updateStats();
+            this.updateDifficultyCounts(); // Mettre à jour les compteurs de difficulté
+        }
+    }
+
+    // Réinitialiser les statistiques du jeu
+    resetGameStats() {
+        this.totalWordsFound = 0;
+        this.wordTimes = [];
+        this.bestTime = null;
+        this.currentStreak = 0;
+        this.bestStreak = 0;
+        this.totalAttempts = 0;
+        this.correctAttempts = 0;
+        this.stars = 0;
+        this.currentLevel = 1;
+        
+        this.updateScore();
+        this.updateStats();
+    }
+
+    // Changer la difficulté
+    setDifficulty(difficulty) {
+        this.currentDifficulty = difficulty;
+        
+        // Mettre à jour l'interface des boutons
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(`${difficulty}Btn`).classList.add('active');
+        
+        // Afficher un message de confirmation
+        const difficultyNames = {
+            'easy': '🟢 Facile',
+            'medium': '🟠 Moyen', 
+            'hard': '🔴 Difficile'
+        };
+        this.showFeedback(`Niveau changé : ${difficultyNames[difficulty]}`, 'info');
+        
+        // Redémarrer le jeu avec la nouvelle difficulté
+        this.newGame();
+    }
+
+    // Mettre à jour les compteurs de mots par difficulté
+    updateDifficultyCounts() {
+        const difficulties = ['easy', 'medium', 'hard'];
+        
+        difficulties.forEach(difficulty => {
+            const allWords = Object.keys(this.hints[difficulty]);
+            const foundWords = this.userManager.getWordsFound();
+            const availableWords = allWords.filter(word => !foundWords.includes(word));
+            const foundCount = allWords.filter(word => foundWords.includes(word)).length;
+            
+            const countElement = document.getElementById(`${difficulty}Count`);
+            countElement.textContent = `(${foundCount}/${allWords.length})`;
+        });
     }
 }
 

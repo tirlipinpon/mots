@@ -31,6 +31,138 @@ h1 {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
+.login-section {
+    background: linear-gradient(135deg, #e6f3ff, #b3d9ff);
+    border: 2px solid #4a90e2;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.login-form h3 {
+    color: #2c5aa0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.login-form input {
+    font-size: 1em;
+    padding: 10px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    text-align: center;
+    width: 200px;
+    margin-right: 10px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+}
+
+.user-info {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info span {
+    color: #2c5aa0;
+    font-weight: bold;
+}
+
+.btn-small {
+    background: linear-gradient(45deg, #e53e3e, #c53030);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-small:hover {
+    background: linear-gradient(45deg, #c53030, #9c2626);
+    transform: translateY(-1px);
+}
+
+.hidden {
+    display: none !important;
+}
+
+.difficulty-section {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 2px solid #0ea5e9;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.difficulty-section h3 {
+    color: #0c4a6e;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.difficulty-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.difficulty-btn {
+    background: linear-gradient(45deg, #e5e7eb, #d1d5db);
+    color: #374151;
+    border: 2px solid #9ca3af;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    min-width: 120px;
+}
+
+.difficulty-btn:hover {
+    background: linear-gradient(45deg, #d1d5db, #9ca3af);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.difficulty-btn.active {
+    background: linear-gradient(45deg, #10b981, #059669);
+    color: white;
+    border-color: #047857;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.difficulty-btn.active:hover {
+    background: linear-gradient(45deg, #059669, #047857);
+    transform: translateY(-2px);
+}
+
+.words-count {
+    display: block;
+    font-size: 0.8em;
+    font-weight: normal;
+    margin-top: 2px;
+    opacity: 0.8;
+}
+
 .score-board {
     display: flex;
     justify-content: space-around;

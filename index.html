@@ -10,6 +10,18 @@
     <div class="game-container">
         <h1>🎮 Devine le Mot ! 🎮</h1>
         
+        <div class="login-section" id="loginSection">
+            <div class="login-form">
+                <h3>👤 Connexion (optionnel)</h3>
+                <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
+                <button class="btn" id="loginBtn">Se connecter</button>
+                <div class="user-info hidden" id="userInfo">
+                    <span>Connecté en tant que : <strong id="currentUser"></strong></span>
+                    <button class="btn-small" id="logoutBtn">Déconnexion</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="score-board">
             <div class="score-item">
                 <h3>⭐ Étoiles</h3>
@@ -29,6 +41,24 @@
             </div>
         </div>
 
+        <div class="difficulty-section">
+            <h3>🎯 Niveau de Difficulté</h3>
+            <div class="difficulty-buttons">
+                <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
+                    🟢 Facile
+                    <span class="words-count" id="easyCount">(0/0)</span>
+                </button>
+                <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
+                    🟠 Moyen
+                    <span class="words-count" id="mediumCount">(0/0)</span>
+                </button>
+                <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
+                    🔴 Difficile
+                    <span class="words-count" id="hardCount">(0/0)</span>
+                </button>
+            </div>
+        </div>
+        
         <div class="stats-toggle-section">
             <button class="btn stats-toggle-btn" id="statsToggleBtn">📈 Voir les Statistiques</button>
         </div>
@@ -90,6 +120,7 @@
     </div>
 
     <script src="js/data.js"></script>
+    <script src="js/userManager.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>
