@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Jeu de Devinette de Mots</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 Devine le Mot ! 🎮</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <h3>⭐ Étoiles</h3>
+                <div class="score-value" id="stars">0</div>
+            </div>
+            <div class="score-item">
+                <h3>🏆 Niveau</h3>
+                <div class="score-value" id="level">1</div>
+            </div>
+            <div class="score-item">
+                <h3>⏱️ Temps</h3>
+                <div class="score-value" id="timer">0s</div>
+            </div>
+            <div class="score-item">
+                <h3>📊 Mots</h3>
+                <div class="score-value" id="wordsFound">0</div>
+            </div>
+        </div>
+
+        <div class="stats-toggle-section">
+            <button class="btn stats-toggle-btn" id="statsToggleBtn">📈 Voir les Statistiques</button>
+        </div>
+
+        <div class="stats-section hidden" id="statsSection">
+            <h3>📈 Statistiques</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Mots trouvés</div>
+                    <div class="stat-value" id="totalWords">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Temps moyen</div>
+                    <div class="stat-value" id="avgTime">0s</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Meilleur temps</div>
+                    <div class="stat-value" id="bestTime">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Série actuelle</div>
+                    <div class="stat-value" id="currentStreak">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Meilleure série</div>
+                    <div class="stat-value" id="bestStreak">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Précision</div>
+                    <div class="stat-value" id="accuracy">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="level-indicator" id="levelIndicator">Niveau 1</div>
+
+        <div class="hint-section" id="hintSection">
+            <div class="hint-title">💡 Indice :</div>
+            <div class="hint-text" id="hintText">Animal domestique qui miaule et chasse les souris</div>
+        </div>
+
+        <div class="word-display" id="wordDisplay">
+            <div class="letter-box">?</div>
+            <div class="letter-box">?</div>
+            <div class="letter-box">?</div>
+            <div class="letter-box">?</div>
+        </div>
+
+        <div class="input-section">
+            <input type="text" class="word-input" id="wordInput" placeholder="Tape ton mot..." maxlength="10">
+            <button class="btn" id="newGameBtn">Nouveau Mot</button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            Devine le mot de 4 lettres ! 💭
+        </div>
+
+        <div class="stars" id="starsDisplay"></div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
