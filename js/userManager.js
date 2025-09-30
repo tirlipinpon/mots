@@ -100,6 +100,14 @@ class UserManager {
         const wordsFoundInDifficulty = this.wordsFoundByDifficulty[currentDifficulty] || [];
         return allWords.filter(word => !wordsFoundInDifficulty.includes(word));
     }
+    
+    // Réinitialiser les mots trouvés pour une difficulté
+    resetDifficultyWords(difficulty) {
+        if (this.wordsFoundByDifficulty[difficulty]) {
+            this.wordsFoundByDifficulty[difficulty] = [];
+            this.saveUserData();
+        }
+    }
 
     // Vérifier si un utilisateur existe
     userExists(username) {

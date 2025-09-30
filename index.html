@@ -20,7 +20,47 @@
                 </div>
             </div>
         </div>
-        
+
+        <div class="difficulty-section">
+            <div class="difficulty-buttons">
+                <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
+                    🟢 Facile
+                    <span class="words-count" id="easyCount">(0/0)</span>
+                </button>
+                <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
+                    🟠 Moyen
+                    <span class="words-count" id="mediumCount">(0/0)</span>
+                </button>
+                <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
+                    🔴 Difficile
+                    <span class="words-count" id="hardCount">(0/0)</span>
+                </button>
+            </div>
+        </div>
+
+
+        <div class="hint-section" id="hintSection">
+            <div class="hint-text" id="hintText">Animal domestique qui miaule et chasse les souris</div>
+        </div>
+
+        <div class="word-display" id="wordDisplay">
+            <div class="letter-box">?</div>
+            <div class="letter-box">?</div>
+            <div class="letter-box">?</div>
+            <div class="letter-box">?</div>
+        </div>
+
+        <div class="input-section">
+            <input type="text" class="word-input" id="wordInput" placeholder="Tape ton mot..." maxlength="10">
+            <button class="btn" id="newGameBtn">Nouveau Mot</button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            Devine le mot de 4 lettres ! 💭
+        </div>
+
+        <div class="stars" id="starsDisplay"></div>
+
         <div class="toggle-section" id="scoreSection">
             <div class="toggle-header" id="scoreToggle">
                 <div class="toggle-header-info">
@@ -111,51 +151,19 @@
                 </div>
             </div>
         </div>
-
-        <div class="difficulty-section">
-            <div class="difficulty-buttons">
-                <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
-                    🟢 Facile
-                    <span class="words-count" id="easyCount">(0/0)</span>
-                </button>
-                <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
-                    🟠 Moyen
-                    <span class="words-count" id="mediumCount">(0/0)</span>
-                </button>
-                <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
-                    🔴 Difficile
-                    <span class="words-count" id="hardCount">(0/0)</span>
-                </button>
-            </div>
-        </div>
-
-
-        <div class="hint-section" id="hintSection">
-            <div class="hint-text" id="hintText">Animal domestique qui miaule et chasse les souris</div>
-        </div>
-
-        <div class="word-display" id="wordDisplay">
-            <div class="letter-box">?</div>
-            <div class="letter-box">?</div>
-            <div class="letter-box">?</div>
-            <div class="letter-box">?</div>
-        </div>
-
-        <div class="input-section">
-            <input type="text" class="word-input" id="wordInput" placeholder="Tape ton mot..." maxlength="10">
-            <button class="btn" id="newGameBtn">Nouveau Mot</button>
-        </div>
-
-        <div class="feedback" id="feedback">
-            Devine le mot de 4 lettres ! 💭
-        </div>
-
-        <div class="stars" id="starsDisplay"></div>
     </div>
 
+    <!-- Données -->
     <script src="js/data.js"></script>
+    
+    <!-- Modules de gestion -->
     <script src="js/userManager.js"></script>
     <script src="js/statsManager.js"></script>
+    <script src="js/uiManager.js"></script>
+    <script src="js/wordManager.js"></script>
+    <script src="js/timerManager.js"></script>
+    
+    <!-- Jeu principal -->
     <script src="js/game.js"></script>
 </body>
 </html>
