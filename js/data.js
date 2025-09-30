@@ -2,7 +2,6 @@
 const GAME_DATA = {
     // NIVEAU FACILE (3-4 lettres) - Vert
     easy: {
-        // 3 lettres
         "arc": "🏹 Arme qui lance des flèches très loin",
         "eau": "💧 Liquide transparent et vital",
         "mai": "🌸 Mois du printemps",
@@ -20,17 +19,12 @@ const GAME_DATA = {
         "paix": "☮️ Absence de guerre et de conflit",
         "reve": "💭 Pensée qui vient quand on dort",
         "lune": "🌙 Astre qui brille la nuit dans le ciel",
-        
-        // 4 lettres
         "epee": "⚔️ Arme brillante et pointue des chevaliers",
         "fee": "🧚 Petite créature magique avec des ailes",
-        "ninja": "🥷 Guerrier masqué qui se déplace en silence",
-        
-        // Nombres (3-4 lettres)
         "un": "1",
         "deux": "2",
-        "trois": "3",
-        
+        "onze": "11",
+        "vélo": "🚲 Véhicule à 2 roues",
         "cinq": "5",
         "six": "6",
         "sept": "7",
@@ -41,14 +35,14 @@ const GAME_DATA = {
     
     // NIVEAU MOYEN (5-6 lettres) - Orange
     medium: {
-        // 5 lettres
+        "ninja": "🥷 Guerrier masqué qui se déplace en silence",
+        "trois": "3",
         "quatre": "4",
         "dragon": "🐉 Créature magique qui vole et crache du feu",
         "prince": "🤴 Fils du roi, héros des contes de fées",
         "reine": "👸 Femme puissante qui dirige un royaume",
         "heros": "🦸 Personne courageuse qui sauve les autres",
         "pirate": "🏴‍☠️ Aventurier des mers avec un bandeau sur l'œil",
-        "sorcier": "🧙 Homme sage qui connaît tous les sorts",
         "batman": "🦇 Super-héros noir de Gotham",
         "tarzan": "🦍 Homme de la jungle",
         "simba": "🦁 Lion roi de Disney",
@@ -64,20 +58,13 @@ const GAME_DATA = {
         "glace": "🍦 Dessert froid et sucré",
         "bonbon": "🍭 Sucrerie colorée",
         "orange": "🍊 Fruit orange et rond",
-        "carotte": "🥕 Légume orange",
         "voyage": "✈️ Long voyage vers un endroit",
-        "cristal": "💎 Pierre précieuse et brillante",
         "volcan": "🌋 Montagne qui crache du feu",
-        "tempête": "⛈️ Mauvais temps avec vent et pluie",
         "espace": "🚀 Zone vide entre les planètes et étoiles",
-        "lumiere": "💡 Ce qui éclaire et rend visible",
         "foret": "🌲 Grande étendue d'arbres",
-        "rivière": "🌊 Cours d'eau",
-        "vélo": "🚲 Véhicule à 2 roues",
         "avion": "✈️ Véhicule qui vole",
         "bateau": "⛵ Véhicule qui flotte sur l'eau",
         "train": "🚂 Véhicule sur des rails",
-        "onze": "11",
         "douze": "12",
         "treize": "13",
         "quinze": "15",
@@ -102,28 +89,10 @@ const GAME_DATA = {
         "lundi": "📅 Premier jour de la semaine",
         "mardi": "📅 Deuxième jour de la semaine",
         "jeudi": "📅 Quatrième jour de la semaine",
-        
-        // 6 lettres
         "etoile": "⭐ Petite lumière qui scintille dans le ciel",
-        "baleine": "🐋 Très gros animal marin",
-        "chameau": "🐪 Animal du désert avec des bosses",
         "tortue": "🐢 Animal avec une carapace dure",
-        "abeille": "🐝 Insecte qui fait du miel",
-        "chocolat": "🍫 Friandise brune et sucrée",
-        "bonheur": "😊 Sentiment de grande joie",
-        "liberté": "🕊️ Droit de faire ce qu'on veut",
-        "famille": "👨‍👩‍👧‍👦 Groupe de personnes liées",
         "amitié": "🤝 Relation d'amour entre amis",
-        "courage": "💪 Force face à la peur",
-        "sourire": "😊 Expression du visage qui montre la joie",
-        "heureux": "😄 Sentiment de grande joie et de bonheur",
-        "espoir": "🌟 Sentiment d'espoir pour l'avenir",
-        "mystere": "🔍 Enigme mystérieuse à résoudre",
-        "magique": "🎩 Pouvoir surnaturel qui fait des miracles",
-        "aventure": "🗺️ Voyage excitant plein de découvertes",
         "tresor": "💰💎 Richesse cachée que tout le monde cherche",
-        "montagne": "⛰️ Grande élévation de terre",
-        "quatorze": "14",
         "dix-sept": "17",
         "dix-huit": "18",
         "dix-neuf": "19",
@@ -133,29 +102,47 @@ const GAME_DATA = {
         "maison": "🏠 Endroit où on habite",
         "banane": "🍌 Fruit jaune et courbé",
         "gâteau": "🎂 Dessert sucré",
-        
-        // Jours (5-6 lettres)
-        "mercredi": "📅 Troisième jour de la semaine",
-        "vendredi": "📅 Cinquième jour de la semaine",
         "samedi": "📅 Sixième jour de la semaine",
-        "dimanche": "📅 Jour de repos",
-        
-        // Mois (5-6 lettres)
-        "janvier": "❄️ Premier mois de l'année",
-        "février": "❄️ Deuxième mois de l'année",
         "mars": "🌸 Troisième mois de l'année",
         "avril": "🌸 Quatrième mois de l'année",
         "juin": "☀️ Sixième mois de l'année",
-        "juillet": "☀️ Septième mois de l'année",
-        "septembre": "🍂 Neuvième mois de l'année",
-        "octobre": "🍂 Dixième mois de l'année",
-        "novembre": "🍂 Onzième mois de l'année",
-        "décembre": "❄️ Douzième mois de l'année"
+        "espoir": "🌟 Sentiment d'espoir pour l'avenir",
+        "girafe": "🦒 Animal très grand avec un long cou"
     },
     
     // NIVEAU DIFFICILE (7+ lettres) - Rouge
     hard: {
-        // 7 lettres
+        "baleine": "🐋 Très gros animal marin",
+        "chameau": "🐪 Animal du désert avec des bosses",
+        "famille": "👨‍👩‍👧‍👦 Groupe de personnes liées",
+        "abeille": "🐝 Insecte qui fait du miel",
+        "bonheur": "😊 Sentiment de grande joie",
+        "février": "❄️ Deuxième mois de l'année",
+        "décembre": "❄️ Douzième mois de l'année",
+        "tempête": "⛈️ Mauvais temps avec vent et pluie",
+        "rivière": "🌊 Cours d'eau",
+        "lumiere": "💡 Ce qui éclaire et rend visible",
+        "mercredi": "📅 Troisième jour de la semaine",
+        "vendredi": "📅 Cinquième jour de la semaine",
+        "dimanche": "📅 Jour de repos",
+        "janvier": "❄️ Premier mois de l'année",
+        "juillet": "☀️ Septième mois de l'année",
+        "septembre": "🍂 Neuvième mois de l'année",
+        "octobre": "🍂 Dixième mois de l'année",
+        "novembre": "🍂 Onzième mois de l'année",
+        "courage": "💪 Force face à la peur",
+        "sourire": "😊 Expression du visage qui montre la joie",
+        "heureux": "😄 Sentiment de grande joie et de bonheur",
+        "mystere": "🔍 Enigme mystérieuse à résoudre",
+        "magique": "🎩 Pouvoir surnaturel qui fait des miracles",
+        "aventure": "🗺️ Voyage excitant plein de découvertes",
+        "montagne": "⛰️ Grande élévation de terre",
+        "quatorze": "14",
+        "carotte": "🥕 Légume orange",
+        "sorcier": "🧙 Homme sage qui connaît tous les sorts",
+        "cristal": "💎 Pierre précieuse et brillante",
+        "liberté": "🕊️ Droit de faire ce qu'on veut",
+        "chocolat": "🍫 Friandise brune et sucrée",
         "chateau": "🏰 Grande maison fortifiée des rois",
         "courageux": "💪 Qualité de quelqu'un qui n'a pas peur",
         "magicien": "🧙 Personne qui pratique la magie",
@@ -165,7 +152,6 @@ const GAME_DATA = {
         "arcenciel": "🌈 Arc-en-ciel avec toutes les couleurs",
         "papillon": "🦋 Insecte coloré qui vole",
         "elephant": "🐘 Très gros animal avec une trompe",
-        "girafe": "🦒 Animal très grand avec un long cou",
         "dauphin": "🐬 Animal marin intelligent et joueur",
         "pingouin": "🐧 Oiseau qui ne vole pas, nage bien",
         "spiderman": "🕷️ Super-héros qui grimpe aux murs",
@@ -176,8 +162,6 @@ const GAME_DATA = {
         "voiture": "🚗 Véhicule à 4 roues",
         "hôpital": "🏥 Lieu où on soigne",
         "fromage": "🧀 Produit laitier",
-        
-        // 8+ lettres
         "couronne": "👑 Bijou doré que portent les rois et reines",
         "chevalier": "⚔️ Guerrier courageux qui protège les gens"
     }

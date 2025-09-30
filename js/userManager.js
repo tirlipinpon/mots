@@ -2,7 +2,6 @@
 class UserManager {
     constructor() {
         this.currentUser = null;
-        this.wordsFound = [];
         this.wordsFoundByDifficulty = {
             easy: [],
             medium: [],
@@ -35,19 +34,17 @@ class UserManager {
     // Déconnexion
     logout() {
         this.currentUser = null;
-        this.wordsFound = [];
+        this.wordsFoundByDifficulty = {
+            easy: [],
+            medium: [],
+            hard: []
+        };
         this.resetStats();
     }
 
     // Charger les données utilisateur depuis les cookies
     loadUserData() {
         if (!this.currentUser) return;
-
-        // Charger les mots trouvés
-        const wordsFoundCookie = this.getCookie(`words_${this.currentUser}`);
-        if (wordsFoundCookie) {
-            this.wordsFound = JSON.parse(wordsFoundCookie);
-        }
 
         // Charger les mots trouvés par difficulté
         const wordsByDifficultyCookie = this.getCookie(`wordsByDifficulty_${this.currentUser}`);
@@ -66,9 +63,6 @@ class UserManager {
     saveUserData() {
         if (!this.currentUser) return;
 
-        // Sauvegarder les mots trouvés
-        this.setCookie(`words_${this.currentUser}`, JSON.stringify(this.wordsFound), 365);
-
         // Sauvegarder les mots trouvés par difficulté
         this.setCookie(`wordsByDifficulty_${this.currentUser}`, JSON.stringify(this.wordsFoundByDifficulty), 365);
 
@@ -79,10 +73,6 @@ class UserManager {
     // Ajouter un mot trouvé
     addWordFound(word, difficulty = null) {
         if (!this.currentUser) return;
-        
-        if (!this.wordsFound.includes(word)) {
-            this.wordsFound.push(word);
-        }
         
         if (difficulty && !this.wordsFoundByDifficulty[difficulty].includes(word)) {
             this.wordsFoundByDifficulty[difficulty].push(word);
@@ -104,17 +94,18 @@ class UserManager {
         this.saveUserData();
     }
 
-    // Obtenir les mots disponibles (excluant ceux déjà trouvés)
-    getAvailableWords(allWords) {
-        // Toujours filtrer les mots déjà trouvés, même sans connexion
-        return allWords.filter(word => !this.wordsFound.includes(word));
+    // Obtenir les mots disponibles (excluant ceux déjà trouvés pour la difficulté actuelle)
+    getAvailableWords(allWords, currentDifficulty) {
+        // Filtrer selon la difficulté actuelle
+        const wordsFoundInDifficulty = this.wordsFoundByDifficulty[currentDifficulty] || [];
+        return allWords.filter(word => !wordsFoundInDifficulty.includes(word));
     }
 
     // Vérifier si un utilisateur existe
     userExists(username) {
-        const wordsCookie = this.getCookie(`words_${username}`);
+        const wordsByDifficultyCookie = this.getCookie(`wordsByDifficulty_${username}`);
         const statsCookie = this.getCookie(`stats_${username}`);
-        return wordsCookie !== null || statsCookie !== null;
+        return wordsByDifficultyCookie !== null || statsCookie !== null;
     }
 
     // Obtenir les statistiques de l'utilisateur
@@ -122,9 +113,13 @@ class UserManager {
         return this.userStats;
     }
 
-    // Obtenir les mots trouvés
-    getWordsFound() {
-        return this.wordsFound;
+    // Obtenir tous les mots trouvés (toutes difficultés confondues)
+    getAllWordsFound() {
+        const allWords = [];
+        Object.values(this.wordsFoundByDifficulty).forEach(words => {
+            allWords.push(...words);
+        });
+        return [...new Set(allWords)]; // Supprime les doublons
     }
 
     // Réinitialiser les statistiques

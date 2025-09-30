@@ -68,17 +68,26 @@ class WordGuessingGame {
     selectRandomWord() {
         // Obtenir les mots de la difficulté sélectionnée
         let allWords = Object.keys(this.hints[this.currentDifficulty]);
-        let availableWords = this.userManager.getAvailableWords(allWords);
+        let availableWords = allWords;
         
-        // Debug : afficher les informations de filtrage
-        console.log(`🔍 Mots ${this.currentDifficulty}: ${allWords.length} total, ${availableWords.length} disponibles`);
-        console.log(`📝 Mots déjà trouvés: [${this.userManager.getWordsFound().join(', ')}]`);
-        
-        // Si l'utilisateur a trouvé tous les mots de cette difficulté, réinitialiser
-        if (availableWords.length === 0) {
-            this.userManager.wordsFound = [];
-            availableWords = allWords;
-            this.showFeedback(`🎉 Félicitations ! Tu as trouvé tous les mots du niveau ${this.currentDifficulty} ! Recommençons ! 🎉`, 'success');
+        // Filtrer les mots déjà trouvés seulement si l'utilisateur est connecté
+        if (this.userManager.isLoggedIn()) {
+            availableWords = this.userManager.getAvailableWords(allWords, this.currentDifficulty);
+            
+            // Debug : afficher les informations de filtrage
+            console.log(`🔍 Mots ${this.currentDifficulty}: ${allWords.length} total, ${availableWords.length} disponibles`);
+            console.log(`📝 Mots déjà trouvés dans ${this.currentDifficulty}: [${this.userManager.getWordsFoundByDifficulty(this.currentDifficulty).join(', ')}]`);
+            
+            // Si l'utilisateur a trouvé tous les mots de cette difficulté, réinitialiser
+            if (availableWords.length === 0) {
+                // Réinitialiser seulement les mots de cette difficulté
+                this.userManager.wordsFoundByDifficulty[this.currentDifficulty] = [];
+                availableWords = allWords;
+                this.showFeedback(`🎉 Félicitations ! Tu as trouvé tous les mots du niveau ${this.currentDifficulty} ! Recommençons ! 🎉`, 'success');
+            }
+        } else {
+            // Si non connecté, juste afficher un message de debug
+            console.log(`🔍 Mots ${this.currentDifficulty}: ${allWords.length} disponibles (mode non connecté)`);
         }
         
         this.currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
@@ -443,56 +452,60 @@ class WordGuessingGame {
         this.stopTimer();
         const timeElapsed = Math.floor((Date.now() - this.startTime) / 1000);
         
-        // Mettre à jour les statistiques
-        this.totalWordsFound++;
-        this.wordTimes.push(timeElapsed);
-        this.currentStreak++;
-        this.correctAttempts++;
-        this.totalAttempts++;
-        
-        // Meilleur temps
-        if (this.bestTime === null || timeElapsed < this.bestTime) {
-            this.bestTime = timeElapsed;
-        }
-        
-        // Meilleure série
-        if (this.currentStreak > this.bestStreak) {
-            this.bestStreak = this.currentStreak;
-        }
-        
-        // Calculer les étoiles selon le temps et les tentatives
-        let starsEarned = 3;
-        if (this.attempts > 3) starsEarned = 2;
-        if (this.attempts > 5) starsEarned = 1;
-        if (timeElapsed > 60) starsEarned = Math.max(1, starsEarned - 1);
-        
-        this.stars += starsEarned;
-        this.currentLevel++;
-        
-        // Sauvegarder le mot trouvé et les statistiques
-        this.userManager.addWordFound(this.currentWord, this.currentDifficulty);
-        this.userManager.updateStats({
-            totalWordsFound: this.totalWordsFound,
-            wordTimes: this.wordTimes,
-            bestTime: this.bestTime,
-            currentStreak: this.currentStreak,
-            bestStreak: this.bestStreak,
-            totalAttempts: this.totalAttempts,
-            correctAttempts: this.correctAttempts,
-            stars: this.stars,
-            currentLevel: this.currentLevel
-        });
+        // Ne gérer les stats, niveaux et étoiles que si l'utilisateur est connecté
+        if (this.userManager.isLoggedIn()) {
+            // Mettre à jour les statistiques
+            this.totalWordsFound++;
+            this.wordTimes.push(timeElapsed);
+            this.currentStreak++;
+            this.correctAttempts++;
+            this.totalAttempts++;
+            
+            // Meilleur temps
+            if (this.bestTime === null || timeElapsed < this.bestTime) {
+                this.bestTime = timeElapsed;
+            }
+            
+            // Meilleure série
+            if (this.currentStreak > this.bestStreak) {
+                this.bestStreak = this.currentStreak;
+            }
+            
+            // Calculer les étoiles selon le temps et les tentatives
+            let starsEarned = 3;
+            if (this.attempts > 3) starsEarned = 2;
+            if (this.attempts > 5) starsEarned = 1;
+            if (timeElapsed > 60) starsEarned = Math.max(1, starsEarned - 1);
+            
+            this.stars += starsEarned;
+            this.currentLevel++;
+            
+            // Sauvegarder le mot trouvé et les statistiques
+            this.userManager.addWordFound(this.currentWord, this.currentDifficulty);
+            this.userManager.updateStats({
+                totalWordsFound: this.totalWordsFound,
+                wordTimes: this.wordTimes,
+                bestTime: this.bestTime,
+                currentStreak: this.currentStreak,
+                bestStreak: this.bestStreak,
+                totalAttempts: this.totalAttempts,
+                correctAttempts: this.correctAttempts,
+                stars: this.stars,
+                currentLevel: this.currentLevel
+            });
 
-        // Ajouter aux statistiques avancées
-        const isPerfect = this.attempts === 1;
-        this.statsManager.addWordFound(this.currentWord, this.currentDifficulty, timeElapsed, this.attempts, isPerfect);
+            // Ajouter aux statistiques avancées
+            const isPerfect = this.attempts === 1;
+            this.statsManager.addWordFound(this.currentWord, this.currentDifficulty, timeElapsed, this.attempts, isPerfect);
+            
+            this.showStars(starsEarned);
+            this.updateScore();
+            this.updateStats();
+            this.updateDifficultyCounts(); // Mettre à jour les compteurs de difficulté
+            this.updateLevelStatus(); // Mettre à jour le niveau dans l'en-tête
+        }
         
         this.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
-        this.showStars(starsEarned);
-        this.updateScore();
-        this.updateStats();
-        this.updateDifficultyCounts(); // Mettre à jour les compteurs de difficulté
-        this.updateLevelStatus(); // Mettre à jour le niveau dans l'en-tête
         this.createCelebration();
         
         // Vider le champ de saisie
@@ -671,6 +684,7 @@ class WordGuessingGame {
             this.showFeedback(`Bienvenue ${username} ! Tes données ont été chargées.`, 'success');
             this.updateLoginStatus();
             this.updateScoreVisibility(); // Afficher les scores
+            this.updateLevelStatus(); // Afficher le niveau
         } else {
             this.showFeedback('Erreur lors de la connexion.', 'error');
         }
@@ -683,6 +697,8 @@ class WordGuessingGame {
         this.resetGameStats();
         this.updateLoginStatus();
         this.updateScoreVisibility(); // Masquer les scores
+        this.updateLevelStatus(); // Masquer le niveau
+        this.updateDifficultyCounts(); // Mettre à jour les compteurs
         this.showFeedback('Déconnexion réussie. Tes données sont sauvegardées.', 'info');
     }
 
@@ -772,11 +788,16 @@ class WordGuessingGame {
         
         difficulties.forEach(difficulty => {
             const allWords = Object.keys(this.hints[difficulty]);
-            const foundWordsInDifficulty = this.userManager.getWordsFoundByDifficulty(difficulty);
-            const foundCount = foundWordsInDifficulty.length;
-            
             const countElement = document.getElementById(`${difficulty}Count`);
-            countElement.textContent = `(${foundCount}/${allWords.length})`;
+            
+            // Afficher le compteur seulement si l'utilisateur est connecté
+            if (this.userManager.isLoggedIn()) {
+                const foundWordsInDifficulty = this.userManager.getWordsFoundByDifficulty(difficulty);
+                const foundCount = foundWordsInDifficulty.length;
+                countElement.textContent = `(${foundCount}/${allWords.length})`;
+            } else {
+                countElement.textContent = `(${allWords.length})`;
+            }
         });
     }
 
@@ -811,7 +832,14 @@ class WordGuessingGame {
     // Mettre à jour le niveau dans l'en-tête
     updateLevelStatus() {
         const levelStatus = document.getElementById('levelStatus');
-        levelStatus.textContent = `Niveau ${this.currentLevel}`;
+        
+        // Afficher le niveau seulement si l'utilisateur est connecté
+        if (this.userManager.isLoggedIn()) {
+            levelStatus.textContent = `Niveau ${this.currentLevel}`;
+            levelStatus.style.display = 'block';
+        } else {
+            levelStatus.style.display = 'none';
+        }
     }
 
     // Formater le temps en format lisible
