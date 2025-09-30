@@ -38,6 +38,7 @@ class WordGuessingGame {
         this.updateDifficultyStatus();
         this.loadUserPreferences();
         this.statsManager.loadStats();
+        this.updateScoreVisibility(); // Masquer les scores si non connecté
     }
 
     // Fonction pour normaliser les accents
@@ -93,9 +94,13 @@ class WordGuessingGame {
     updateHint() {
         const hintText = document.getElementById('hintText');
         if (this.hints[this.currentDifficulty][this.currentWord]) {
-            hintText.innerHTML = '<span class="hint-icon">💡</span> ' + this.hints[this.currentDifficulty][this.currentWord];
+            const hint = this.hints[this.currentDifficulty][this.currentWord];
+            // Détecter et agrandir le(s) emoji(s) au début du texte
+            const emojiRegex = /([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FAFF}])+/gu;
+            const formattedHint = hint.replace(emojiRegex, '<span class="hint-icon">$1</span>');
+            hintText.innerHTML = formattedHint;
         } else {
-            hintText.innerHTML = '<span class="hint-icon">💡</span> Devine le mot !';
+            hintText.innerHTML = 'Devine le mot !';
         }
     }
 
@@ -283,9 +288,7 @@ class WordGuessingGame {
         document.getElementById('hardBtn').addEventListener('click', () => this.setDifficulty('hard'));
         
         // Event listeners pour les toggles
-        document.getElementById('loginToggle').addEventListener('click', () => this.toggleSection('login'));
         document.getElementById('scoreToggle').addEventListener('click', () => this.toggleSection('score'));
-        document.getElementById('difficultyToggle').addEventListener('click', () => this.toggleSection('difficulty'));
         
         const wordInput = document.getElementById('wordInput');
         
@@ -415,12 +418,14 @@ class WordGuessingGame {
         
         // Appliquer l'effet de victoire combo sur chaque lettre
         const wordDisplay = document.getElementById('wordDisplay');
-        const letterBoxes = wordDisplay.children;
-        for (let i = 0; i < letterBoxes.length; i++) {
+        const letterBoxes = Array.from(wordDisplay.children); // Convertir en array pour éviter les problèmes avec setTimeout
+        letterBoxes.forEach((letterBox, i) => {
             setTimeout(() => {
-                letterBoxes[i].classList.add('letter-victory');
+                if (letterBox && letterBox.classList) {
+                    letterBox.classList.add('letter-victory');
+                }
             }, i * 100); // Décalage pour effet cascade
-        }
+        });
         
         this.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
         this.createCelebration();
@@ -665,6 +670,7 @@ class WordGuessingGame {
             this.loadUserData();
             this.showFeedback(`Bienvenue ${username} ! Tes données ont été chargées.`, 'success');
             this.updateLoginStatus();
+            this.updateScoreVisibility(); // Afficher les scores
         } else {
             this.showFeedback('Erreur lors de la connexion.', 'error');
         }
@@ -676,6 +682,7 @@ class WordGuessingGame {
         this.showLoginForm();
         this.resetGameStats();
         this.updateLoginStatus();
+        this.updateScoreVisibility(); // Masquer les scores
         this.showFeedback('Déconnexion réussie. Tes données sont sauvegardées.', 'info');
     }
 
@@ -795,15 +802,10 @@ class WordGuessingGame {
         this.saveUserPreferences();
     }
 
-    // Mettre à jour le statut de connexion dans l'en-tête
+    // Mettre à jour le statut de connexion
     updateLoginStatus() {
-        const loginStatus = document.getElementById('loginStatus');
-        if (this.userManager.isLoggedIn()) {
-            const username = this.userManager.getCurrentUser();
-            loginStatus.textContent = `Connecté: ${username}`;
-        } else {
-            loginStatus.textContent = 'Non connecté';
-        }
+        // Cette fonction peut être utilisée pour d'autres mises à jour si nécessaire
+        // Le statut de connexion est maintenant géré par showLoginForm/showLoginSuccess
     }
 
     // Mettre à jour le niveau dans l'en-tête
@@ -823,15 +825,22 @@ class WordGuessingGame {
         }
     }
 
-    // Mettre à jour le statut de difficulté dans l'en-tête
+    // Mettre à jour le statut de difficulté (fonction conservée pour compatibilité)
     updateDifficultyStatus() {
-        const difficultyStatus = document.getElementById('difficultyStatus');
-        const difficultyNames = {
-            'easy': 'Facile',
-            'medium': 'Moyen', 
-            'hard': 'Difficile'
-        };
-        difficultyStatus.textContent = difficultyNames[this.currentDifficulty];
+        // Le statut de difficulté n'est plus affiché dans un toggle
+        // La difficulté est visible directement via les boutons actifs
+    }
+
+    // Afficher/masquer les scores selon l'état de connexion
+    updateScoreVisibility() {
+        const scoreSection = document.getElementById('scoreSection');
+        if (scoreSection) {
+            if (this.userManager.isLoggedIn()) {
+                scoreSection.style.display = 'block';
+            } else {
+                scoreSection.style.display = 'none';
+            }
+        }
     }
 
     // Charger les préférences utilisateur
@@ -840,9 +849,20 @@ class WordGuessingGame {
         
         // Restaurer l'état des sections toggleables
         Object.keys(preferences.toggledSections).forEach(sectionName => {
+            // Ne pas restaurer la section score si l'utilisateur n'est pas connecté
+            if (sectionName === 'score' && !this.userManager.isLoggedIn()) {
+                return;
+            }
+            
             const isOpen = preferences.toggledSections[sectionName];
             const toggleHeader = document.getElementById(`${sectionName}Toggle`);
             const toggleContent = document.getElementById(`${sectionName}Content`);
+            
+            // Vérifier que les éléments existent (pour éviter les erreurs avec les sections supprimées)
+            if (!toggleHeader || !toggleContent) {
+                return;
+            }
+            
             const toggleIcon = toggleHeader.querySelector('.toggle-icon');
             
             if (isOpen) {
@@ -866,9 +886,7 @@ class WordGuessingGame {
     saveUserPreferences() {
         const preferences = {
             toggledSections: {
-                login: !document.getElementById('loginContent').classList.contains('hidden'),
-                score: !document.getElementById('scoreContent').classList.contains('hidden'),
-                difficulty: !document.getElementById('difficultyContent').classList.contains('hidden')
+                score: !document.getElementById('scoreContent').classList.contains('hidden')
             },
             selectedDifficulty: this.currentDifficulty
         };

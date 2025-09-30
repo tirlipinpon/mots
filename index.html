@@ -10,27 +10,18 @@
     <div class="game-container">
         <h1>🎮 Devine le Mot ! 🎮</h1>
         
-        <div class="toggle-section">
-            <div class="toggle-header" id="loginToggle">
-                <div class="toggle-header-info">
-                    <h3>👤 Connexion</h3>
-                    <span class="toggle-subtitle" id="loginStatus">Non connecté</span>
-                </div>
-                <span class="toggle-icon">+</span>
-            </div>
-            <div class="toggle-content hidden" id="loginContent">
-                <div class="login-form">
-                    <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
-                    <button class="btn" id="loginBtn">Se connecter</button>
-                    <div class="user-info hidden" id="userInfo">
-                        <span>Connecté en tant que : <strong id="currentUser"></strong></span>
-                        <button class="btn-small" id="logoutBtn">Déconnexion</button>
-                    </div>
+        <div class="login-section">
+            <div class="login-form">
+                <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
+                <button class="btn" id="loginBtn">Se connecter</button>
+                <div class="user-info hidden" id="userInfo">
+                    <span>Connecté en tant que : <strong id="currentUser"></strong></span>
+                    <button class="btn-small" id="logoutBtn">Déconnexion</button>
                 </div>
             </div>
         </div>
         
-        <div class="toggle-section">
+        <div class="toggle-section" id="scoreSection">
             <div class="toggle-header" id="scoreToggle">
                 <div class="toggle-header-info">
                     <h3>📊 Score et Statistiques</h3>
@@ -121,36 +112,26 @@
             </div>
         </div>
 
-        <div class="toggle-section">
-            <div class="toggle-header" id="difficultyToggle">
-                <div class="toggle-header-info">
-                    <h3>🎯 Niveau de Difficulté</h3>
-                    <span class="toggle-subtitle" id="difficultyStatus">Facile</span>
-                </div>
-                <span class="toggle-icon">+</span>
-            </div>
-            <div class="toggle-content hidden" id="difficultyContent">
-                <div class="difficulty-buttons">
-                    <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
-                        🟢 Facile
-                        <span class="words-count" id="easyCount">(0/0)</span>
-                    </button>
-                    <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
-                        🟠 Moyen
-                        <span class="words-count" id="mediumCount">(0/0)</span>
-                    </button>
-                    <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
-                        🔴 Difficile
-                        <span class="words-count" id="hardCount">(0/0)</span>
-                    </button>
-                </div>
+        <div class="difficulty-section">
+            <div class="difficulty-buttons">
+                <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
+                    🟢 Facile
+                    <span class="words-count" id="easyCount">(0/0)</span>
+                </button>
+                <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
+                    🟠 Moyen
+                    <span class="words-count" id="mediumCount">(0/0)</span>
+                </button>
+                <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
+                    🔴 Difficile
+                    <span class="words-count" id="hardCount">(0/0)</span>
+                </button>
             </div>
         </div>
 
 
         <div class="hint-section" id="hintSection">
-            <div class="hint-title">Indice :</div>
-            <div class="hint-text" id="hintText"><span class="hint-icon">💡</span> Animal domestique qui miaule et chasse les souris</div>
+            <div class="hint-text" id="hintText">Animal domestique qui miaule et chasse les souris</div>
         </div>
 
         <div class="word-display" id="wordDisplay">
