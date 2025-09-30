@@ -200,6 +200,23 @@ class WordGuessingGame {
             }
         }
         
+        // Vérifier si toutes les letter-box sont vertes (même si l'input n'est pas complet)
+        if (input.length > 0) {
+            // Compter combien de letter-box sont vertes
+            let allLettersGreen = true;
+            for (let i = 0; i < letterBoxes.length; i++) {
+                if (!letterBoxes[i].classList.contains('letter-correct')) {
+                    allLettersGreen = false;
+                    break;
+                }
+            }
+            
+            // Si toutes les letter-box sont vertes, considérer le mot comme trouvé
+            if (allLettersGreen && !this.isCurrentWordCorrect) {
+                this.showCorrectWord();
+            }
+        }
+        
         // Feedback en temps réel avec analyse
         if (input.length === 0) {
             this.showFeedback(`Devine le mot de ${this.currentWord.length} lettres ! 💭`, 'info');
@@ -395,6 +412,15 @@ class WordGuessingGame {
         
         // Marquer le mot comme correct
         this.isCurrentWordCorrect = true;
+        
+        // Appliquer l'effet de victoire combo sur chaque lettre
+        const wordDisplay = document.getElementById('wordDisplay');
+        const letterBoxes = wordDisplay.children;
+        for (let i = 0; i < letterBoxes.length; i++) {
+            setTimeout(() => {
+                letterBoxes[i].classList.add('letter-victory');
+            }, i * 100); // Décalage pour effet cascade
+        }
         
         this.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
         this.createCelebration();
@@ -597,6 +623,7 @@ class WordGuessingGame {
         for (let i = 0; i < letterBoxes.length; i++) {
             letterBoxes[i].textContent = '?';
             letterBoxes[i].className = 'letter-box';
+            letterBoxes[i].classList.remove('letter-victory'); // Retirer l'effet de victoire
         }
         
         // Désactiver le bouton "Nouveau Mot"
