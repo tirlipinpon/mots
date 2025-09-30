@@ -356,6 +356,14 @@ h1 {
     font-style: italic;
 }
 
+.hint-icon {
+    font-size: 1.8em;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+    animation: pulse 2s ease-in-out infinite;
+}
+
 .word-display {
     font-size: 2em;
     font-weight: bold;

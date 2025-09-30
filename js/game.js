@@ -93,9 +93,9 @@ class WordGuessingGame {
     updateHint() {
         const hintText = document.getElementById('hintText');
         if (this.hints[this.currentDifficulty][this.currentWord]) {
-            hintText.textContent = this.hints[this.currentDifficulty][this.currentWord];
+            hintText.innerHTML = '<span class="hint-icon">💡</span> ' + this.hints[this.currentDifficulty][this.currentWord];
         } else {
-            hintText.textContent = 'Devine le mot !';
+            hintText.innerHTML = '<span class="hint-icon">💡</span> Devine le mot !';
         }
     }
 
