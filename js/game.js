@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.4.2
-const GAME_VERSION = '1.4.2';
+// Version: 1.5.3
+const GAME_VERSION = '1.5.3';
 
 class WordGuessingGame {
     constructor() {
@@ -27,6 +27,7 @@ class WordGuessingGame {
         this.currentLevel = 1;
         this.stars = 0;
         this.currentDifficulty = 'easy';
+        this.currentCategory = 'toutes';
         this.attempts = 0;
         this.isCurrentWordCorrect = false;
         this.helpUsed = false;
@@ -48,6 +49,7 @@ class WordGuessingGame {
         this.loadUserPreferences();
         this.statsManager.loadStats();
         this.updateVisibility();
+        this.updateCategorySelect();
     }
 
     initializeGame() {
@@ -63,20 +65,40 @@ class WordGuessingGame {
     }
 
     selectRandomWord() {
-        const result = this.wordManager.selectRandomWord(this.currentDifficulty, this.userManager);
+        const result = this.wordManager.selectRandomWord(this.currentDifficulty, this.userManager, this.currentCategory);
         
-        // Si tous les mots sont complétés (pas de mot disponible)
+        // Si tous les mots sont complétés
         if (result.allWordsCompleted) {
             console.log(`🎉 Niveau ${this.currentDifficulty} complété !`);
             this.levelProgressionManager.handleLevelCompleted(this.currentDifficulty);
-            return; // Stopper ici, ne pas continuer
+            return;
+        }
+        
+        // Si la catégorie est complétée (mais pas le niveau entier)
+        if (result.categoryCompleted) {
+            console.log(`🎉 Catégorie ${this.currentCategory} complétée pour le niveau ${this.currentDifficulty} !`);
+            const categoryName = getCategoryName(this.currentCategory);
+            this.ui.showFeedback(`🎉 Tous les mots ${categoryName} trouvés dans ce niveau !`, 'success');
+            this.soundManager.play('wordFound');
+            
+            // Retour automatique à "Toutes"
+            setTimeout(() => {
+                this.currentCategory = 'toutes';
+                this.updateCategorySelect();
+                this.selectRandomWord();
+                this.ui.createLetterBoxes(this.currentWord.length);
+                this.timer.start();
+                this.hintManager.resetHelp();
+                this.inputHandler.reset();
+            }, 2000);
+            return;
         }
         
         this.currentWord = result.word;
         this.attempts = 0;
         
         console.log(`%c🎯 MOT ACTUEL: "${this.currentWord.toUpperCase()}"`, 'color: #f59e0b; font-size: 14px; font-weight: bold; background: #fef3c7; padding: 4px 8px; border-radius: 4px;');
-        console.log(`📏 Longueur: ${this.currentWord.length} lettres | 🎚️ Niveau: ${this.currentDifficulty}`);
+        console.log(`📏 Longueur: ${this.currentWord.length} lettres | 🎚️ Niveau: ${this.currentDifficulty} | 🗂️ Catégorie: ${this.currentCategory}`);
         console.log('');
         
         const hint = this.wordManager.getHint(this.currentWord, this.currentDifficulty);
@@ -108,6 +130,59 @@ class WordGuessingGame {
             soundBtn.addEventListener('click', () => this.toggleSound());
             this.updateSoundButton();
         }
+        
+        // Sélecteur de catégorie
+        const categorySelect = document.getElementById('categorySelect');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', (e) => this.setCategory(e.target.value));
+        }
+    }
+    
+    // Changer la catégorie
+    setCategory(category) {
+        this.currentCategory = category;
+        console.log(`🗂️ Catégorie changée: ${category}`);
+        
+        const categoryName = getCategoryName(category);
+        this.ui.showFeedback(`Catégorie: ${categoryName}`, 'info');
+        
+        this.newGame();
+    }
+    
+    // Mettre à jour la liste déroulante des catégories
+    updateCategorySelect() {
+        const select = document.getElementById('categorySelect');
+        if (!select || typeof getAvailableCategoriesForLevel !== 'function') return;
+        
+        // Obtenir les catégories disponibles pour le niveau actuel
+        const availableCategories = getAvailableCategoriesForLevel(this.currentDifficulty, GAME_DATA);
+        
+        // Vider et repeupler
+        select.innerHTML = '';
+        
+        availableCategories.forEach(categoryKey => {
+            const option = document.createElement('option');
+            option.value = categoryKey;
+            
+            // Compter les mots dans cette catégorie
+            const wordsInCategory = getWordsByCategory(categoryKey, this.currentDifficulty, GAME_DATA);
+            const wordCount = wordsInCategory.length;
+            
+            // Afficher nom + nombre de mots
+            if (categoryKey === 'toutes') {
+                option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
+            } else {
+                option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
+            }
+            
+            if (categoryKey === this.currentCategory) {
+                option.selected = true;
+            }
+            
+            select.appendChild(option);
+        });
+        
+        console.log(`🗂️ Catégories disponibles: ${availableCategories.length}`);
     }
     
     // Activer/Désactiver les sons

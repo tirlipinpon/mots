@@ -1,5 +1,128 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.5.3 (2025-10-03)
+
+### 🐛 Correction : Bug de complétion de catégorie
+
+**Problème** :
+
+- Terminer une catégorie → Le niveau entier était marqué comme complété ❌
+- Exemple : Finir "🔢 Nombres (4 mots)" → Niveau Facile (82 mots) bloqué !
+
+**Solution** :
+
+- Distinction claire entre `categoryCompleted` et `allWordsCompleted`
+- Vérification sur TOUS les mots du niveau, pas seulement la catégorie
+- Message correct : "Catégorie complétée" vs "Niveau complété"
+- Retour automatique à "Toutes" après catégorie complétée
+
+**Maintenant** :
+
+- ✅ Terminer une catégorie → Message + retour à "Toutes"
+- ✅ Continuer à jouer les autres catégories du même niveau
+- ✅ Le niveau se bloque SEULEMENT quand TOUS les mots sont trouvés
+
+---
+
+## Version 1.5.2 (2025-10-03)
+
+### 🔢 Amélioration : Compteur de mots par catégorie
+
+- ✅ Affichage du nombre de mots à côté de chaque catégorie
+- Exemple : `🐶 Animaux (5)`, `🍎 Nourriture (29)`, `📦 Toutes (82)`
+- Aide à visualiser rapidement la taille de chaque catégorie
+- S'adapte automatiquement au niveau sélectionné
+
+---
+
+## Version 1.5.1 (2025-10-03)
+
+### ⚡ Optimisation majeure : Structure des catégories
+
+**AVANT** : Ajout d'un mot = modifier 2 fichiers ❌
+
+```javascript
+// data-easy.js
+"chat": "🐱 Animal domestique"
+
+// categories.js
+animaux: { words: ["chat", "chien"...] }  // ← Oublier = bug !
+```
+
+**MAINTENANT** : Un seul endroit ! ✅
+
+```javascript
+// data-easy.js SEULEMENT
+"chat": { hint: "🐱 Animal domestique", cat: 1 }
+//                                       ↑
+//                            ID catégorie (voir guide)
+```
+
+### 🎯 Avantages
+
+- ✅ **Un seul fichier à modifier** pour ajouter un mot
+- ✅ **Moins d'erreurs** : impossible d'oublier de synchroniser
+- ✅ **Plus rapide** : `cat: 1` = 7 caractères au lieu de lignes entières
+- ✅ **Rétrocompatible** : ancien format `"chat": "indice"` toujours supporté
+- ✅ **IDs faciles** : 1=Animaux, 2=Nourriture, 3=Nature, 5=Nombres...
+
+### 📁 Fichiers modifiés
+
+- `categories.js` : Maintenant juste une table de correspondance ID→Nom
+- `data-easy.js` : Exemples convertis au nouveau format `{ hint: "...", cat: ID }`
+- `CATEGORIES_GUIDE.md` : Documentation complète avec tableau des IDs
+
+### 🔄 Migration
+
+Format ancien toujours supporté ! Migration progressive possible :
+
+```javascript
+"chat": "🐱 Animal"  // ← Ancien (marche toujours, cat: 99 auto)
+"chien": { hint: "🐕 Ami", cat: 1 }  // ← Nouveau (catégorisé)
+```
+
+---
+
+## Version 1.5.0 (2025-10-03)
+
+### 🗂️ Nouvelle fonctionnalité majeure : Catégories de mots
+
+- ✅ Système de filtrage par catégorie (Animaux, Nourriture, Nature, etc.)
+- ✅ Liste déroulante à droite des boutons de niveau
+- ✅ 11 catégories disponibles : Animaux, Nourriture, Nature, Véhicules, Nombres, Temps, Émotions, Personnages, Corps, Maison, Couleurs, Divers
+- ✅ Progression reste par niveau (catégories = simple filtre)
+- ✅ Retour automatique à "Toutes" quand une catégorie est complétée
+- ✅ Liste centralisée dans `categories.js` pour mise à jour facile
+
+### 📁 Fichier `categories.js`
+
+Liste centralisée de tous les mots par catégorie :
+
+```javascript
+CATEGORIES = {
+  animaux: { name: "🐶 Animaux", words: ["chat", "chien"...] },
+  nourriture: { name: "🍎 Nourriture", words: ["pain", "pizza"...] },
+  // ... etc
+}
+```
+
+### 🎮 Fonctionnement
+
+- Liste déroulante affiche seulement les catégories du niveau actuel
+- Sélectionner "🐶 Animaux" → Propose seulement des animaux
+- Tous les animaux trouvés → Message + retour auto à "📦 Toutes"
+- Changement de niveau → Réinitialise à "Toutes"
+- Compatible avec l'ancien format de données (rétrocompatible)
+
+### 🔧 Technique
+
+- `wordManager.js` : Support filtre catégorie + rétrocompatibilité
+- `categories.js` : Fonctions utilitaires (`getCategoryForWord`, `getWordsByCategory`, etc.)
+- Calcul à la volée (pas de changement de structure de sauvegarde)
+- Mise à jour facile : Modifier seulement `categories.js`
+
+---
+
 ## Version 1.4.2 (2025-10-03)
 
 ### 🔊 Amélioration système de sons

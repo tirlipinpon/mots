@@ -13,36 +13,70 @@ class WordManager {
             .trim();
     }
     
-    // Sélectionner un mot aléatoire
-    selectRandomWord(difficulty, userManager) {
-        let allWords = Object.keys(this.hints[difficulty]);
-        let availableWords = allWords;
+    // Sélectionner un mot aléatoire (avec support filtrage par catégorie)
+    selectRandomWord(difficulty, userManager, categoryFilter = 'toutes') {
+        // TOUS les mots du niveau (pour vérifier complétion totale)
+        const allWordsInLevel = Object.keys(this.hints[difficulty]);
+        
+        // Mots de la catégorie filtrée
+        let filteredWords = allWordsInLevel;
+        if (categoryFilter && categoryFilter !== 'toutes' && typeof getWordsByCategory === 'function') {
+            filteredWords = getWordsByCategory(categoryFilter, difficulty, this.hints);
+            console.log(`🗂️ Filtre catégorie "${categoryFilter}": ${filteredWords.length} mots disponibles`);
+        }
+        
+        let availableWords = filteredWords;
         
         // Filtrer les mots déjà trouvés seulement si l'utilisateur est connecté
         if (userManager.isLoggedIn()) {
-            availableWords = userManager.getAvailableWords(allWords, difficulty);
+            availableWords = userManager.getAvailableWords(filteredWords, difficulty);
             
-            console.log(`🔍 Sélection mot ${difficulty}: ${availableWords.length}/${allWords.length} disponibles`);
+            console.log(`🔍 Sélection mot ${difficulty}: ${availableWords.length}/${filteredWords.length} disponibles`);
             
-            // Si tous les mots sont trouvés, signaler la complétion
+            // Si aucun mot disponible dans la catégorie filtrée
             if (availableWords.length === 0) {
-                console.log(`🏆 Tous les mots ${difficulty} trouvés !`);
-                return {
-                    word: null,
-                    allWordsCompleted: true
-                };
+                // Vérifier si TOUS les mots du niveau (pas juste la catégorie) sont complétés
+                const allAvailableWords = userManager.getAvailableWords(allWordsInLevel, difficulty);
+                const isLevelComplete = allAvailableWords.length === 0;
+                
+                if (isLevelComplete) {
+                    console.log(`🏆 Tous les mots ${difficulty} du NIVEAU trouvés !`);
+                    return {
+                        word: null,
+                        allWordsCompleted: true,
+                        categoryCompleted: false
+                    };
+                } else {
+                    console.log(`🎉 Catégorie "${categoryFilter}" complétée !`);
+                    return {
+                        word: null,
+                        allWordsCompleted: false,
+                        categoryCompleted: true
+                    };
+                }
             }
         }
         
         return {
             word: availableWords[Math.floor(Math.random() * availableWords.length)],
-            allWordsCompleted: false
+            allWordsCompleted: false,
+            categoryCompleted: false
         };
     }
     
-    // Obtenir l'indice d'un mot
+    // Obtenir l'indice d'un mot (supporte ancien et nouveau format)
     getHint(word, difficulty) {
-        return this.hints[difficulty][word] || null;
+        const data = this.hints[difficulty][word];
+        
+        if (!data) return null;
+        
+        // Nouveau format: { hint: "...", category: "..." }
+        if (typeof data === 'object' && data.hint) {
+            return data.hint;
+        }
+        
+        // Ancien format: "indice direct"
+        return data;
     }
     
     // Analyser une tentative

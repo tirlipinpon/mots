@@ -214,7 +214,9 @@ class LevelProgressionManager {
         }
         
         this.game.currentDifficulty = difficulty;
+        this.game.currentCategory = 'toutes'; // Réinitialiser à "toutes" quand on change de niveau
         this.game.ui.updateDifficultyButtons(difficulty);
+        this.game.updateCategorySelect();
         this.game.ui.showFeedback(`Niveau changé : ${this.game.ui.DIFFICULTY_NAMES[difficulty]}`, 'info');
         this.game.newGame();
         this.game.saveUserPreferences();

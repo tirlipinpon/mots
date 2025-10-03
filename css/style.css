@@ -121,6 +121,33 @@ h1 {
     justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.category-select {
+    background: linear-gradient(45deg, #e5e7eb, #d1d5db);
+    color: #374151;
+    border: 2px solid #9ca3af;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    min-width: 150px;
+}
+
+.category-select:hover {
+    background: linear-gradient(45deg, #d1d5db, #9ca3af);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.category-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
 }
 
 .difficulty-btn {
