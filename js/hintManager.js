@@ -41,9 +41,9 @@ class HintManager {
         this.domElements.helpBtn.classList.add('used');
     }
     
-    // Afficher la lettre révélée
+    // Afficher l'indice pour la lettre
     showRevealedLetter(letter, position) {
-        const message = `💡 lettre n°${position + 1} est "${letter.toUpperCase()}"`;
+        const message = this.generateAlternativeHint(letter, position);
         this.domElements.revealedLetter.textContent = message;
         this.domElements.revealedLetter.classList.remove('hidden');
     }
@@ -59,6 +59,106 @@ class HintManager {
         this.showHelpButton();
         this.hideRevealedLetter();
         this.isHelpUsed = false;
+    }
+    
+    // Obtenir la position d'une lettre dans l'alphabet (A=1, B=2, etc.)
+    getLetterPosition(letter) {
+        return letter.toUpperCase().charCodeAt(0) - 64;
+    }
+    
+    // Obtenir une lettre à partir de sa position dans l'alphabet
+    getLetterFromPosition(position) {
+        return String.fromCharCode(position + 64);
+    }
+    
+    // Générer un calcul mathématique pour trouver la position
+    generateMathHint(targetPosition) {
+        const operations = ['addition', 'subtraction', 'multiplication'];
+        const operation = operations[Math.floor(Math.random() * operations.length)];
+        
+        let calculation = '';
+        
+        switch (operation) {
+            case 'addition':
+                // Générer deux nombres qui additionnés donnent la position
+                const num1 = Math.floor(Math.random() * (targetPosition - 1)) + 1;
+                const num2 = targetPosition - num1;
+                calculation = `${num1} + ${num2}`;
+                break;
+                
+            case 'subtraction':
+                // Générer une soustraction
+                const minuend = targetPosition + Math.floor(Math.random() * 10) + 1;
+                const subtrahend = minuend - targetPosition;
+                calculation = `${minuend} − ${subtrahend}`;
+                break;
+                
+            case 'multiplication':
+                // Trouver des facteurs de la position ou un calcul proche
+                const factors = this.findFactors(targetPosition);
+                if (factors.length > 0) {
+                    const factorPair = factors[Math.floor(Math.random() * factors.length)];
+                    calculation = `${factorPair[0]} × ${factorPair[1]}`;
+                } else {
+                    // Si pas de facteurs intéressants, utiliser addition
+                    const n1 = Math.floor(Math.random() * (targetPosition - 1)) + 1;
+                    const n2 = targetPosition - n1;
+                    calculation = `${n1} + ${n2}`;
+                }
+                break;
+        }
+        
+        return calculation;
+    }
+    
+    // Trouver les paires de facteurs d'un nombre
+    findFactors(num) {
+        const factors = [];
+        for (let i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i === 0) {
+                factors.push([i, num / i]);
+            }
+        }
+        return factors;
+    }
+    
+    // Générer un indice de voisinage (lettre avant/après)
+    generateNeighborHint(letter) {
+        const position = this.getLetterPosition(letter);
+        const hints = [];
+        
+        // Lettre après (si pas Z)
+        if (position < 26) {
+            const nextLetter = this.getLetterFromPosition(position + 1);
+            hints.push(`C'est la lettre avant ${nextLetter}`);
+        }
+        
+        // Lettre avant (si pas A)
+        if (position > 1) {
+            const prevLetter = this.getLetterFromPosition(position - 1);
+            hints.push(`C'est la lettre après ${prevLetter}`);
+        }
+        
+        return hints[Math.floor(Math.random() * hints.length)];
+    }
+    
+    // Générer un indice alternatif (calcul ou voisinage)
+    generateAlternativeHint(letter, position) {
+        const letterPosition = this.getLetterPosition(letter);
+        const hintTypes = ['math', 'neighbor'];
+        const hintType = hintTypes[Math.floor(Math.random() * hintTypes.length)];
+        
+        let hintMessage = '';
+        
+        if (hintType === 'math') {
+            const calculation = this.generateMathHint(letterPosition);
+            hintMessage = `💡lettre n°${position + 1} : Position dans l'alphabet = ${calculation}`;
+        } else {
+            const neighborHint = this.generateNeighborHint(letter);
+            hintMessage = `💡lettre n°${position + 1} : ${neighborHint}`;
+        }
+        
+        return hintMessage;
     }
     
     // Révéler la prochaine lettre manquante

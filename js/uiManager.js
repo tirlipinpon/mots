@@ -80,6 +80,11 @@ class UIManager {
         for (let i = 0; i < letterBoxes.length; i++) {
             const letterBox = letterBoxes[i];
             
+            // Ne jamais modifier une lettre verte (correcte)
+            if (letterBox.classList.contains('letter-correct')) {
+                continue;
+            }
+            
             if (i < input.length) {
                 if (letterBox.textContent !== input[i].toUpperCase()) {
                     letterBox.textContent = input[i].toUpperCase();
@@ -97,10 +102,8 @@ class UIManager {
                     }, 500);
                 }
             } else {
-                if (!letterBox.classList.contains('letter-correct')) {
-                    letterBox.textContent = '?';
-                    letterBox.className = 'letter-box';
-                }
+                letterBox.textContent = '?';
+                letterBox.className = 'letter-box';
             }
         }
     }

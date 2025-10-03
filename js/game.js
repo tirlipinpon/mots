@@ -109,6 +109,9 @@ class WordGuessingGame {
     handleInput(inputValue) {
         const letterBoxes = this.ui.domElements.wordDisplay.children;
         
+        // Compter les lettres vertes consécutives
+        const consecutiveGreenCount = this.wordManager.countConsecutiveGreenLetters(letterBoxes);
+        
         // Limiter la longueur
         let input = inputValue;
         if (input.length > this.currentWord.length) {
@@ -116,12 +119,22 @@ class WordGuessingGame {
             this.ui.domElements.wordInput.value = input;
         }
         
-        // Vérifier suppression des lettres vertes
-        if (input.length < this.previousInputValue.length) {
-            const consecutiveGreenCount = this.wordManager.countConsecutiveGreenLetters(letterBoxes);
+        // S'assurer que l'input contient toujours les lettres vertes au début
+        if (consecutiveGreenCount > 0) {
+            let greenLetters = '';
+            for (let i = 0; i < consecutiveGreenCount; i++) {
+                greenLetters += letterBoxes[i].textContent;
+            }
             
+            // Si l'input ne commence pas par les lettres vertes, le corriger
+            if (!input.toUpperCase().startsWith(greenLetters)) {
+                input = greenLetters + input.substring(consecutiveGreenCount);
+                this.ui.domElements.wordInput.value = input;
+            }
+            
+            // Empêcher de supprimer les lettres vertes
             if (input.length < consecutiveGreenCount) {
-                this.ui.domElements.wordInput.value = this.previousInputValue;
+                this.ui.domElements.wordInput.value = this.previousInputValue || greenLetters;
                 this.ui.showFeedback('Tu ne peux pas supprimer les lettres vertes ! 🚫', 'warning');
                 return;
             }
