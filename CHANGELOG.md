@@ -1,5 +1,55 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.5.5 (2025-10-03)
+
+### 🐛 Correction : Bug de reset des compteurs à la reconnexion
+
+**Problème** :
+
+- Trouve des mots → Déconnexion → Reconnexion
+- Les compteurs se réinitialisaient (catégories montraient tous les mots)
+- Bug : `updateCategorySelect()` n'était pas appelé lors du chargement des données
+
+**Solution** :
+
+- ✅ Appel de `updateCategorySelect()` dans `loadUserData()`
+- ✅ Les compteurs affichent les mots RESTANTS dès la reconnexion
+- ✅ Les catégories complètes restent cachées après reconnexion
+- ✅ Déconnexion réinitialise correctement (tous les mots visibles)
+
+**Maintenant** :
+
+- Connexion → Compteurs corrects (mots restants)
+- Trouve des mots → Compteurs baissent
+- Déconnexion/Reconnexion → Compteurs conservés ✨
+- Déconnexion → Compteurs réinitialisés (mode sans compte)
+
+---
+
+## Version 1.5.4 (2025-10-03)
+
+### 🔄 Amélioration : Liste déroulante dynamique
+
+**Mots RESTANTS (pas trouvés) au lieu du total** :
+
+- Avant : `🐶 Animaux (5)` = 5 mots au total
+- Maintenant : `🐶 Animaux (5)` → `(4)` → `(3)` → disparaît à 0 ✨
+
+**Catégories complètes retirées automatiquement** :
+
+- Trouve tous les animaux → `🐶 Animaux` disparaît de la liste
+- La liste se met à jour en temps réel après chaque mot trouvé
+- Si catégorie actuelle complétée → retour automatique à `📦 Toutes`
+
+**Avantages** :
+
+- ✅ Vision claire de ce qui reste à trouver
+- ✅ Liste plus courte au fur et à mesure
+- ✅ Pas de catégories vides dans la liste
+- ✅ Progression visible en direct
+
+---
+
 ## Version 1.5.3 (2025-10-03)
 
 ### 🐛 Correction : Bug de complétion de catégorie

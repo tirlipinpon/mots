@@ -68,14 +68,23 @@ function getWordsByCategory(categoryKey, difficulty, gameData) {
 }
 
 // Fonction pour obtenir les catégories disponibles dans un niveau
-function getAvailableCategoriesForLevel(difficulty, gameData) {
+function getAvailableCategoriesForLevel(difficulty, gameData, userManager = null) {
     const allWordsInLevel = Object.keys(gameData[difficulty]);
-    const availableCategories = ['toutes']; // Toujours disponible
+    const availableCategories = [];
     
-    // Compter combien de mots dans chaque catégorie
+    // Toujours ajouter "toutes" en premier
+    const allAvailableWords = userManager && userManager.isLoggedIn() 
+        ? userManager.getAvailableWords(allWordsInLevel, difficulty)
+        : allWordsInLevel;
+    
+    if (allAvailableWords.length > 0) {
+        availableCategories.push('toutes');
+    }
+    
+    // Compter combien de mots RESTANTS dans chaque catégorie
     const categoryCounts = {};
     
-    allWordsInLevel.forEach(word => {
+    allAvailableWords.forEach(word => {
         const wordData = gameData[difficulty][word];
         let categoryId = 99; // Autres par défaut
         
@@ -87,7 +96,7 @@ function getAvailableCategoriesForLevel(difficulty, gameData) {
         categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
     });
     
-    // Ajouter les catégories qui ont au moins 1 mot
+    // Ajouter les catégories qui ont au moins 1 mot RESTANT
     CATEGORIES.forEach(cat => {
         if (cat.id !== 0 && categoryCounts[cat.id] > 0) {
             availableCategories.push(cat.key);
@@ -95,6 +104,20 @@ function getAvailableCategoriesForLevel(difficulty, gameData) {
     });
     
     return availableCategories;
+}
+
+// Fonction pour compter les mots restants dans une catégorie
+function getWordCountInCategory(categoryKey, difficulty, gameData, userManager = null) {
+    const wordsInCategory = getWordsByCategory(categoryKey, difficulty, gameData);
+    
+    // Si pas d'utilisateur connecté, retourner tous les mots
+    if (!userManager || !userManager.isLoggedIn()) {
+        return wordsInCategory.length;
+    }
+    
+    // Filtrer les mots déjà trouvés
+    const availableWords = userManager.getAvailableWords(wordsInCategory, difficulty);
+    return availableWords.length;
 }
 
 // Obtenir le nom d'une catégorie

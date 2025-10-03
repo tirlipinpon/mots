@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.5.3
-const GAME_VERSION = '1.5.3';
+// Version: 1.5.5
+const GAME_VERSION = '1.5.5';
 
 class WordGuessingGame {
     constructor() {
@@ -154,8 +154,17 @@ class WordGuessingGame {
         const select = document.getElementById('categorySelect');
         if (!select || typeof getAvailableCategoriesForLevel !== 'function') return;
         
-        // Obtenir les catégories disponibles pour le niveau actuel
-        const availableCategories = getAvailableCategoriesForLevel(this.currentDifficulty, GAME_DATA);
+        // Obtenir les catégories disponibles (avec mots restants seulement)
+        const availableCategories = getAvailableCategoriesForLevel(
+            this.currentDifficulty, 
+            GAME_DATA, 
+            this.userManager
+        );
+        
+        // Si la catégorie actuelle n'est plus disponible, revenir à "toutes"
+        if (!availableCategories.includes(this.currentCategory)) {
+            this.currentCategory = 'toutes';
+        }
         
         // Vider et repeupler
         select.innerHTML = '';
@@ -164,16 +173,16 @@ class WordGuessingGame {
             const option = document.createElement('option');
             option.value = categoryKey;
             
-            // Compter les mots dans cette catégorie
-            const wordsInCategory = getWordsByCategory(categoryKey, this.currentDifficulty, GAME_DATA);
-            const wordCount = wordsInCategory.length;
+            // Compter les mots RESTANTS dans cette catégorie
+            const wordCount = getWordCountInCategory(
+                categoryKey, 
+                this.currentDifficulty, 
+                GAME_DATA, 
+                this.userManager
+            );
             
-            // Afficher nom + nombre de mots
-            if (categoryKey === 'toutes') {
-                option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
-            } else {
-                option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
-            }
+            // Afficher nom + nombre de mots restants
+            option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
             
             if (categoryKey === this.currentCategory) {
                 option.selected = true;
@@ -182,7 +191,7 @@ class WordGuessingGame {
             select.appendChild(option);
         });
         
-        console.log(`🗂️ Catégories disponibles: ${availableCategories.length}`);
+        console.log(`🗂️ Catégories disponibles: ${availableCategories.length} (mots restants affichés)`);
     }
     
     // Activer/Désactiver les sons
@@ -294,6 +303,7 @@ class WordGuessingGame {
         this.ui.updateScore(this.stars, this.currentLevel, this.totalWordsFound);
         this.updateStats();
         this.levelProgressionManager.updateDifficultyCounts();
+        this.updateCategorySelect(); // Mettre à jour la liste des catégories
         this.updateLevelStatus();
         this.levelProgressionManager.updateDifficultyButtonsState();
     }
@@ -344,7 +354,7 @@ class WordGuessingGame {
         }
         
         if (this.userManager.login(username)) {
-            this.loadUserData();
+            this.loadUserData(); // Charge les données (appelle déjà updateCategorySelect())
             this.ui.showFeedback(`Bienvenue ${username} ! Tes données ont été chargées.`, 'success');
             this.ui.setCurrentUser(username);
             this.updateVisibility();
@@ -360,6 +370,7 @@ class WordGuessingGame {
         this.updateVisibility();
         this.updateLevelStatus();
         this.levelProgressionManager.updateDifficultyCounts();
+        this.updateCategorySelect(); // Réinitialiser la liste avec tous les mots (mode déconnecté)
         
         // Débloquer tous les boutons de difficulté
         ['easy', 'medium', 'hard'].forEach(difficulty => {
@@ -388,6 +399,7 @@ class WordGuessingGame {
             this.ui.updateScore(this.stars, this.currentLevel, this.totalWordsFound);
             this.updateStats();
             this.levelProgressionManager.updateDifficultyCounts();
+            this.updateCategorySelect(); // Mettre à jour la liste des catégories avec les mots restants
             this.updateLevelStatus();
             this.levelProgressionManager.updateDifficultyButtonsState();
             
