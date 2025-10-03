@@ -127,6 +127,11 @@ class InputHandler {
             if (this.currentInput.length > 0) {
                 this.currentInput = this.currentInput.slice(0, -1);
                 this.handleInput(this.currentInput);
+                
+                // Réinitialiser le tracking du curseur pour l'aide (curseur a bougé)
+                if (this.game.hintManager) {
+                    this.game.hintManager.resetCursorTracking();
+                }
             }
             return;
         }
@@ -156,6 +161,11 @@ class InputHandler {
             
             this.currentInput += e.key;
             this.handleInput(this.currentInput);
+            
+            // Réinitialiser le tracking du curseur pour l'aide (curseur a bougé)
+            if (this.game.hintManager) {
+                this.game.hintManager.resetCursorTracking();
+            }
         }
     }
     

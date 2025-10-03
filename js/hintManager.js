@@ -8,7 +8,48 @@ class HintManager {
         this.EMOJI_REGEX = /([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FAFF}])+/gu;
         
         // État
-        this.isHelpUsed = false;
+        this.helpUsedCount = 0;
+        this.maxHelpAllowed = 1; // Par défaut 1 aide
+        this.lastHelpedCursorPosition = -1; // Position du curseur lors de la dernière aide
+    }
+    
+    // Définir le nombre maximum d'aides selon la difficulté
+    setMaxHelp(difficulty) {
+        if (difficulty === 'hard') {
+            this.maxHelpAllowed = 2; // 2 aides en mode difficile
+        } else {
+            this.maxHelpAllowed = 1; // 1 aide en facile/moyen
+        }
+        this.updateHelpButton();
+    }
+    
+    // Vérifier si l'aide est encore disponible
+    canUseHelp() {
+        return this.helpUsedCount < this.maxHelpAllowed;
+    }
+    
+    // Mettre à jour le texte du bouton d'aide
+    updateHelpButton() {
+        if (!this.domElements.helpBtn) return;
+        
+        console.log(`🔄 updateHelpButton: ${this.helpUsedCount}/${this.maxHelpAllowed}`);
+        
+        if (this.helpUsedCount >= this.maxHelpAllowed) {
+            this.domElements.helpBtn.classList.add('used');
+            this.domElements.helpBtn.title = 'Aide épuisée';
+            if (this.maxHelpAllowed > 1) {
+                this.domElements.helpBtn.textContent = `💡${this.helpUsedCount}/${this.maxHelpAllowed}`;
+            }
+        } else {
+            this.domElements.helpBtn.classList.remove('used');
+            if (this.maxHelpAllowed > 1) {
+                this.domElements.helpBtn.textContent = `💡${this.helpUsedCount}/${this.maxHelpAllowed}`;
+                this.domElements.helpBtn.title = `Révéler une lettre (${this.maxHelpAllowed - this.helpUsedCount} restant${this.maxHelpAllowed - this.helpUsedCount > 1 ? 's' : ''})`;
+            } else {
+                this.domElements.helpBtn.textContent = '💡';
+                this.domElements.helpBtn.title = 'Révéler une lettre';
+            }
+        }
     }
     
     // Mettre en cache les éléments DOM
@@ -34,6 +75,7 @@ class HintManager {
     showHelpButton() {
         this.domElements.helpBtn.classList.remove('used');
         this.domElements.helpBtn.style.display = 'flex';
+        this.updateHelpButton();
     }
     
     // Masquer le bouton d'aide
@@ -41,9 +83,15 @@ class HintManager {
         this.domElements.helpBtn.classList.add('used');
     }
     
+    // Marquer l'aide comme utilisée
+    markHelpUsed() {
+        this.helpUsedCount++;
+        this.updateHelpButton();
+    }
+    
     // Afficher l'indice pour la lettre
-    showRevealedLetter(letter, position) {
-        const message = this.generateAlternativeHint(letter, position);
+    showRevealedLetter(letter, position, difficulty) {
+        const message = this.generateAlternativeHint(letter, position, difficulty);
         this.domElements.revealedLetter.textContent = message;
         this.domElements.revealedLetter.classList.remove('hidden');
     }
@@ -56,9 +104,11 @@ class HintManager {
     
     // Réinitialiser le bouton d'aide pour un nouveau mot
     resetHelp() {
-        this.showHelpButton();
+        this.helpUsedCount = 0;
+        this.lastHelpedCursorPosition = -1; // Réinitialiser la position du curseur
+        this.domElements.helpBtn.classList.remove('used');
         this.hideRevealedLetter();
-        this.isHelpUsed = false;
+        this.updateHelpButton();
     }
     
     // Obtenir la position d'une lettre dans l'alphabet (A=1, B=2, etc.)
@@ -122,18 +172,18 @@ class HintManager {
         return factors;
     }
     
-    // Générer un indice de voisinage (lettre avant/après)
-    generateNeighborHint(letter) {
+    // Générer un indice de voisinage simple (lettre avant/après) - NIVEAU FACILE
+    generateSimpleNeighborHint(letter) {
         const position = this.getLetterPosition(letter);
         const hints = [];
         
-        // Lettre après (si pas Z)
+        // 1. Lettre après simple (si pas Z)
         if (position < 26) {
             const nextLetter = this.getLetterFromPosition(position + 1);
             hints.push(`C'est la lettre avant ${nextLetter}`);
         }
         
-        // Lettre avant (si pas A)
+        // 2. Lettre avant simple (si pas A)
         if (position > 1) {
             const prevLetter = this.getLetterFromPosition(position - 1);
             hints.push(`C'est la lettre après ${prevLetter}`);
@@ -142,37 +192,71 @@ class HintManager {
         return hints[Math.floor(Math.random() * hints.length)];
     }
     
-    // Générer un indice alternatif (calcul ou voisinage)
-    generateAlternativeHint(letter, position) {
-        const letterPosition = this.getLetterPosition(letter);
-        const hintTypes = ['math', 'neighbor'];
-        const hintType = hintTypes[Math.floor(Math.random() * hintTypes.length)];
+    // Générer un indice avec calcul +/- (ex: "Lettre après B+2") - NIVEAU DIFFICILE
+    generateComplexNeighborHint(letter) {
+        const position = this.getLetterPosition(letter);
+        const hints = [];
         
+        // 1. Lettre + opération (ex: "Lettre après B+2" pour D)
+        if (position >= 3) {
+            const offset = Math.floor(Math.random() * 3) + 1; // 1, 2, ou 3
+            const baseLetter = this.getLetterFromPosition(position - offset);
+            hints.push(`Lettre après ${baseLetter}+${offset}`);
+        }
+        
+        // 2. Lettre - opération (ex: "Lettre avant F-2" pour D)
+        if (position <= 24) {
+            const offset = Math.floor(Math.random() * 3) + 1; // 1, 2, ou 3
+            const baseLetter = this.getLetterFromPosition(position + offset);
+            hints.push(`Lettre avant ${baseLetter}-${offset}`);
+        }
+        
+        return hints[Math.floor(Math.random() * hints.length)];
+    }
+    
+    // Générer un indice alternatif selon le niveau de difficulté
+    generateAlternativeHint(letter, position, difficulty) {
+        const letterPosition = this.getLetterPosition(letter);
         let hintMessage = '';
         
-        if (hintType === 'math') {
+        // EASY : Indice simple (lettre avant/après)
+        if (difficulty === 'easy') {
+            const neighborHint = this.generateSimpleNeighborHint(letter);
+            hintMessage = `💡 ${neighborHint}`;
+        }
+        // MEDIUM : Calcul de position dans l'alphabet
+        else if (difficulty === 'medium') {
             const calculation = this.generateMathHint(letterPosition);
             hintMessage = `💡 Position dans l'alphabet = ${calculation}`;
-        } else {
-            const neighborHint = this.generateNeighborHint(letter);
-            hintMessage = `💡 ${neighborHint}`;
+        }
+        // HARD : Calcul avec +/- (ex: "Lettre après B+2")
+        else if (difficulty === 'hard') {
+            const complexHint = this.generateComplexNeighborHint(letter);
+            hintMessage = `💡 ${complexHint}`;
         }
         
         return hintMessage;
     }
     
     // Révéler la prochaine lettre manquante
-    revealNextLetter(currentWord, letterBoxes) {
-        if (this.isHelpUsed) {
+    revealNextLetter(currentWord, letterBoxes, currentCursorPosition, difficulty) {
+        if (!this.canUseHelp()) {
             return null;
         }
         
-        // Trouver la prochaine lettre manquante
+        // BLOQUER si le curseur n'a pas bougé depuis la dernière aide
+        if (this.lastHelpedCursorPosition === currentCursorPosition) {
+            console.log(`⚠️ Aide bloquée : Curseur toujours à la position ${currentCursorPosition}. Tape une lettre d'abord !`);
+            return null;
+        }
+        
+        // Trouver la prochaine lettre manquante (à partir de la position du curseur)
         let nextMissingIndex = -1;
         for (let i = 0; i < currentWord.length; i++) {
             const box = letterBoxes[i];
             const isCorrect = box.classList.contains('letter-correct');
             
+            // Chercher une lettre non correcte
             if (!isCorrect) {
                 nextMissingIndex = i;
                 break;
@@ -181,9 +265,11 @@ class HintManager {
         
         if (nextMissingIndex !== -1) {
             const revealedLetter = currentWord[nextMissingIndex];
-            this.showRevealedLetter(revealedLetter, nextMissingIndex);
-            this.hideHelpButton();
-            this.isHelpUsed = true;
+            this.showRevealedLetter(revealedLetter, nextMissingIndex, difficulty);
+            this.lastHelpedCursorPosition = currentCursorPosition; // Sauvegarder la position du curseur
+            this.markHelpUsed();
+            
+            console.log(`💡 Aide ${this.helpUsedCount}/${this.maxHelpAllowed} : Lettre à position ${nextMissingIndex + 1} (curseur était à ${currentCursorPosition})`);
             
             return {
                 letter: revealedLetter,
@@ -196,12 +282,19 @@ class HintManager {
     
     // Vérifier si l'aide a été utilisée
     isUsed() {
-        return this.isHelpUsed;
+        return this.helpUsedCount > 0;
     }
     
     // Réinitialiser l'état d'utilisation de l'aide
     resetUsageState() {
-        this.isHelpUsed = false;
+        this.helpUsedCount = 0;
+        this.lastHelpedCursorPosition = -1;
+        this.updateHelpButton();
+    }
+    
+    // Réinitialiser la position du curseur (quand l'utilisateur tape une lettre)
+    resetCursorTracking() {
+        this.lastHelpedCursorPosition = -1;
     }
 }
 

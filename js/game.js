@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.7.0
-const GAME_VERSION = '1.7.0';
+// Version: 1.7.5
+const GAME_VERSION = '1.7.5';
 
 class WordGuessingGame {
     constructor() {
@@ -113,6 +113,9 @@ class WordGuessingGame {
         
         this.currentWord = result.word;
         this.attempts = 0;
+        
+        // Configurer le nombre d'aides selon la difficulté
+        this.hintManager.setMaxHelp(this.currentDifficulty);
         
         console.log(`%c🎯 MOT ACTUEL: "${this.currentWord.toUpperCase()}"`, 'color: #f59e0b; font-size: 14px; font-weight: bold; background: #fef3c7; padding: 4px 8px; border-radius: 4px;');
         console.log(`📏 Longueur: ${this.currentWord.length} lettres | 🎚️ Niveau: ${this.currentDifficulty} | 🗂️ Catégorie: ${this.currentCategory}`);
@@ -349,18 +352,32 @@ class WordGuessingGame {
     
     // Gérer l'aide - révéler la prochaine lettre manquante
     handleHelp() {
-        if (this.helpUsed || this.isCurrentWordCorrect) {
+        if (this.isCurrentWordCorrect) {
             return;
         }
         
         const letterBoxes = this.ui.domElements.wordDisplay.children;
+        const currentCursorPosition = this.ui.getCursorPosition();
         
-        const result = this.hintManager.revealNextLetter(this.currentWord, letterBoxes);
+        const result = this.hintManager.revealNextLetter(this.currentWord, letterBoxes, currentCursorPosition, this.currentDifficulty);
         
         if (result) {
             this.helpUsed = true;
             this.soundManager.play('hint');
-            this.ui.showFeedback(`💡 Indice révélé ! Continue ! 💪`, 'info');
+            
+            const remaining = this.hintManager.maxHelpAllowed - this.hintManager.helpUsedCount;
+            if (remaining > 0) {
+                this.ui.showFeedback(`💡 Indice révélé ! (${remaining} aide${remaining > 1 ? 's' : ''} restante${remaining > 1 ? 's' : ''}) Tape une lettre pour réutiliser l'aide ! 💪`, 'info');
+            } else {
+                this.ui.showFeedback(`💡 Dernier indice révélé ! Plus d'aide disponible ! 💪`, 'info');
+            }
+        } else {
+            // Vérifier si c'est bloqué par la position du curseur ou par le nombre d'aides
+            if (this.hintManager.helpUsedCount < this.hintManager.maxHelpAllowed) {
+                this.ui.showFeedback(`⚠️ Tape d'abord une lettre avant de redemander l'aide !`, 'warning');
+            } else {
+                this.ui.showFeedback(`⚠️ Toutes les aides ont été utilisées !`, 'warning');
+            }
         }
     }
 

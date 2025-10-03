@@ -1,5 +1,129 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.7.5 (2025-10-03)
+
+### 🧮 Amélioration : Indices avec calculs sur lettres voisines
+
+**Nouveaux types d'indices ajoutés** :
+
+1. **Lettre + calcul** : `Lettre après B+2` (pour D)
+2. **Lettre - calcul** : `Lettre avant F-2` (pour D)
+3. **Indices simples** : `La lettre après C` (pour D)
+4. **Calculs position** : `Position = 3+1` (pour D)
+
+**Exemples pour la lettre "D" (position 4)** :
+
+- `💡 Position dans l'alphabet = 3 + 1`
+- `💡 La lettre juste après C`
+- `💡 La lettre juste avant E`
+- `💡 Lettre après B+2` ← **NOUVEAU !**
+- `💡 Lettre avant G-3` ← **NOUVEAU !**
+
+**Avantages** :
+
+- ✅ Plus de variété dans les indices
+- ✅ Apprentissage des opérations (addition/soustraction)
+- ✅ Combine lettres ET mathématiques
+- ✅ Plus ludique et éducatif
+
+**Probabilités** :
+
+- 33% calcul de position pure
+- 67% calcul sur lettres (simple ou avec opérations)
+
+---
+
+## Version 1.7.4 (2025-10-03)
+
+### 🐛 Correction : Debug du compteur d'aide
+
+- ✅ Ajout de logs pour déboguer l'affichage du compteur
+- ✅ Vérification que le bouton existe avant mise à jour
+
+---
+
+## Version 1.7.3 (2025-10-03)
+
+### 🔧 Correction : Une seule aide par position de curseur
+
+**Problème v1.7.2** :
+
+- On pouvait cliquer plusieurs fois sur l'aide sans taper de lettre
+- Le curseur ne bougeait pas → Plusieurs indices pour la même position
+- Confusion : 2 indices différents pour la même lettre
+
+**Solution v1.7.3** :
+
+- ✅ Tracking de la position du curseur lors de l'aide : `lastHelpedCursorPosition`
+- ✅ Blocage si le curseur n'a pas bougé depuis la dernière aide
+- ✅ Reset du tracking quand l'utilisateur tape une lettre (ou backspace)
+- ✅ Message clair : "Tape d'abord une lettre avant de redemander l'aide !"
+
+**Règle stricte** : **1 aide par position de curseur**
+
+**Exemple** :
+
+```
+Curseur position 0 → [💡] Clic → Indice donné ✅
+Curseur position 0 → [💡] Clic → BLOQUÉ ❌ "Tape une lettre d'abord !"
+Tape "C" → Curseur position 1
+Curseur position 1 → [💡] Clic → Indice donné ✅
+```
+
+**Garantie** : Pas de double indice sur la même position du curseur !
+
+---
+
+## Version 1.7.2 (2025-10-03)
+
+### 🔧 Correction : Éviter de révéler 2 fois la même lettre
+
+**Problème** :
+
+- En mode difficile avec 2 aides, on pouvait cliquer 2 fois et avoir l'indice pour la même lettre
+- Pas optimal : `💡 Position = 3` puis `💡 Position = 3` encore
+
+**Solution** :
+
+- ✅ Tracking des positions déjà révélées : `revealedPositions = []`
+- ✅ La 2ème aide révèle une AUTRE lettre
+- ✅ Exemple : Position 1 puis Position 2 (jamais 2 fois la position 1)
+- ✅ Reset automatique à chaque nouveau mot
+
+**Exemple mode DIFFICILE** :
+
+- Mot : "chocolat" (8 lettres)
+- 1ère aide → Indice pour lettre n°1 (C)
+- 2ème aide → Indice pour lettre n°2 (H) ← DIFFÉRENT !
+
+---
+
+## Version 1.7.1 (2025-10-03)
+
+### 💡 Nouvelle fonctionnalité : 2 aides en mode DIFFICILE
+
+**Système d'aide adaptatif** :
+
+- 🟢 **Facile** : 1 aide par mot
+- 🟠 **Moyen** : 1 aide par mot
+- 🔴 **Difficile** : **2 aides par mot** ! 🎉
+
+**Fonctionnement** :
+
+- Bouton affiche `💡 0/2` au début (en difficile)
+- Première aide → `💡 1/2` + Message "1 aide restante"
+- Deuxième aide → `💡 2/2` + Bouton grisé
+- Changement de niveau → Compteur adapté automatiquement
+
+**Avantages** :
+
+- ✅ Mode difficile moins frustrant pour les enfants
+- ✅ Progression visible : 0/2 → 1/2 → 2/2
+- ✅ Feedback clair du nombre d'aides restantes
+- ✅ Logique adaptée au niveau de difficulté
+
+---
+
 ## Version 1.7.0 (2025-10-03)
 
 ### 📊 Amélioration : Logs de statistiques au démarrage
