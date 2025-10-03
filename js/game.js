@@ -17,6 +17,7 @@ class WordGuessingGame {
         this.attempts = 0;
         this.isCurrentWordCorrect = false;
         this.previousInputValue = '';
+        this.currentInput = '';
         this.helpUsed = false;
         
         // Statistiques
@@ -44,10 +45,7 @@ class WordGuessingGame {
         this.timer.start();
         this.ui.disableNextWordButton();
         this.hintManager.resetHelp();
-        
-        setTimeout(() => {
-            this.ui.focusInput();
-        }, 100);
+        this.currentInput = '';
     }
 
     selectRandomWord() {
@@ -89,21 +87,44 @@ class WordGuessingGame {
         // Bouton d'aide
         this.hintManager.domElements.helpBtn.addEventListener('click', () => this.handleHelp());
         
-        // Input du mot
-        this.ui.domElements.wordInput.addEventListener('input', (e) => {
-            this.handleInput(e.target.value);
-        });
+        // Capturer les événements clavier sur le document
+        document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+    }
+
+    handleKeyPress(e) {
+        // Ignorer les touches si un input est focus (login, etc.)
+        if (document.activeElement.tagName === 'INPUT') {
+            return;
+        }
         
         // Touche Entrée
-        this.ui.domElements.wordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                if (this.isCurrentWordCorrect) {
-                    this.newGame();
-                } else {
-                    this.ui.showFeedback('Continue ! Tu n\'as pas encore trouvé le bon mot ! 💪', 'warning');
-                }
+        if (e.key === 'Enter') {
+            if (this.isCurrentWordCorrect) {
+                this.newGame();
+            } else {
+                this.ui.showFeedback('Continue ! Tu n\'as pas encore trouvé le bon mot ! 💪', 'warning');
             }
-        });
+            return;
+        }
+        
+        // Touche Backspace
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+            if (this.currentInput.length > 0) {
+                this.currentInput = this.currentInput.slice(0, -1);
+                this.handleInput(this.currentInput);
+            }
+            return;
+        }
+        
+        // Lettres (a-z, A-Z)
+        if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+            e.preventDefault();
+            if (this.currentInput.length < this.currentWord.length) {
+                this.currentInput += e.key;
+                this.handleInput(this.currentInput);
+            }
+        }
     }
 
     handleInput(inputValue) {
@@ -116,7 +137,7 @@ class WordGuessingGame {
         let input = inputValue;
         if (input.length > this.currentWord.length) {
             input = input.substring(0, this.currentWord.length);
-            this.ui.domElements.wordInput.value = input;
+            this.currentInput = input;
         }
         
         // S'assurer que l'input contient toujours les lettres vertes au début
@@ -129,22 +150,15 @@ class WordGuessingGame {
             // Si l'input ne commence pas par les lettres vertes, le corriger
             if (!input.toUpperCase().startsWith(greenLetters)) {
                 input = greenLetters + input.substring(consecutiveGreenCount);
-                this.ui.domElements.wordInput.value = input;
+                this.currentInput = input;
             }
             
             // Empêcher de supprimer les lettres vertes
             if (input.length < consecutiveGreenCount) {
-                this.ui.domElements.wordInput.value = this.previousInputValue || greenLetters;
+                this.currentInput = this.previousInputValue || greenLetters;
                 this.ui.showFeedback('Tu ne peux pas supprimer les lettres vertes ! 🚫', 'warning');
                 return;
             }
-        }
-        
-        // Classe typing
-        if (input.length > 0) {
-            this.ui.domElements.wordInput.classList.add('typing');
-        } else {
-            this.ui.domElements.wordInput.classList.remove('typing');
         }
         
         // Analyser la tentative
@@ -195,7 +209,7 @@ class WordGuessingGame {
         this.ui.showVictoryEffect();
         this.ui.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
         this.ui.createCelebration();
-        this.ui.clearInput();
+        this.currentInput = '';
         this.ui.enableNextWordButton();
     }
 
@@ -211,7 +225,7 @@ class WordGuessingGame {
         
         this.ui.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
         this.ui.createCelebration();
-        this.ui.clearInput();
+        this.currentInput = '';
     }
 
     updateGameStats(timeElapsed) {
@@ -274,6 +288,7 @@ class WordGuessingGame {
         
         this.isCurrentWordCorrect = false;
         this.previousInputValue = '';
+        this.currentInput = '';
         this.helpUsed = false;
         
         this.timer.stop();
@@ -285,7 +300,6 @@ class WordGuessingGame {
         this.ui.resetLetterBoxes();
         this.hintManager.resetHelp();
         this.ui.disableNextWordButton();
-        this.ui.focusInput();
     }
     
     // Gérer l'aide - révéler la prochaine lettre manquante

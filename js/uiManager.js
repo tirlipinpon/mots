@@ -16,7 +16,6 @@ class UIManager {
     cacheDOMElements() {
         this.domElements = {
             wordDisplay: document.getElementById('wordDisplay'),
-            wordInput: document.getElementById('wordInput'),
             feedback: document.getElementById('feedback'),
             timer: document.getElementById('timer'),
             newGameBtn: document.getElementById('newGameBtn'),
@@ -63,7 +62,6 @@ class UIManager {
     // Créer l'affichage des boîtes de lettres
     createLetterBoxes(wordLength) {
         this.domElements.wordDisplay.innerHTML = '';
-        this.domElements.wordInput.maxLength = wordLength;
         
         for (let i = 0; i < wordLength; i++) {
             const letterBox = document.createElement('div');
@@ -178,15 +176,14 @@ class UIManager {
         this.domElements.newGameBtn.textContent = 'Trouve le mot d\'abord !';
     }
     
-    // Vider l'input et retirer la classe typing
+    // Méthode dépréciée - conservée pour compatibilité
     clearInput() {
-        this.domElements.wordInput.value = '';
-        this.domElements.wordInput.classList.remove('typing');
+        // Plus d'input à vider - géré par la variable interne dans game.js
     }
     
-    // Focus sur l'input
+    // Méthode dépréciée - conservée pour compatibilité
     focusInput() {
-        this.domElements.wordInput.focus();
+        // Plus d'input sur lequel mettre le focus
     }
     
     // Réinitialiser l'affichage des lettres

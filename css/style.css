@@ -488,29 +488,6 @@ h1 {
     gap: 15px;
 }
 
-.word-input {
-    font-size: 1.2em;
-    padding: 15px;
-    border: 3px solid #e2e8f0;
-    border-radius: 15px;
-    text-align: center;
-    width: 250px;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-}
-
-.word-input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
-}
-
-.word-input.typing {
-    border-color: #48bb78;
-    background-color: #f0fff4;
-}
-
 .btn {
     background: linear-gradient(45deg, #667eea, #764ba2);
     color: white;
