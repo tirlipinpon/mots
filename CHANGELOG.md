@@ -1,5 +1,82 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.2.2 (2025-10-03)
+
+### 📊 Amélioration debug
+
+- ✅ Ajout d'un log stylisé affichant le mot actuel à deviner
+- Format : `🎯 MOT ACTUEL: "XXXX"` avec fond jaune et texte orange
+- Affiche aussi la longueur et le niveau du mot
+
+---
+
+## Version 1.2.1 (2025-10-03)
+
+### 🐛 Corrections de bugs
+
+- ✅ Support du trait d'union (-) pour les mots composés comme "dix-sept"
+- ✅ Modification du regex de capture clavier de `/[a-zA-Z]/` vers `/[a-zA-Z-]/`
+
+---
+
+## Version 1.2.0 (2025-10-03)
+
+### 🏗️ Restructuration de l'architecture
+
+- ✅ Séparation des données en 3 fichiers distincts pour une meilleure maintenabilité
+  - `data-easy.js` : ~60 mots faciles (3-4 lettres)
+  - `data-medium.js` : ~100 mots moyens (5-6 lettres)
+  - `data-hard.js` : ~52 mots difficiles (7+ lettres)
+  - `data.js` : Fichier principal qui combine les 3 niveaux
+
+### 📁 Organisation des fichiers
+
+```
+js/
+├── data-easy.js     ← Mots niveau facile
+├── data-medium.js   ← Mots niveau moyen
+├── data-hard.js     ← Mots niveau difficile
+└── data.js          ← Combine tous les niveaux
+```
+
+### 💡 Avantages
+
+- Chaque niveau peut maintenant être édité indépendamment
+- Plus facile d'ajouter des mots à un niveau spécifique
+- Meilleure organisation du code
+- Fichiers plus petits et plus lisibles
+
+---
+
+## Version 1.1.1 (2025-10-03)
+
+### 🎯 Ajout de contenu
+
+- ✅ Ajout de +60 mots dans le niveau Moyen (maintenant ~100 mots de 5-6 lettres)
+- Thèmes ajoutés : nature, météo, sports, corps humain, meubles, médias, couleurs, aliments, adjectifs
+
+---
+
+## Version 1.1.0 (2025-10-03)
+
+### 🎯 Nouvelles fonctionnalités
+
+- ✅ Ajout de +50 mots dans le niveau Facile (maintenant ~60 mots de 3-4 lettres)
+- ✅ Lancement automatique d'un mot à la connexion
+- ✅ Passage fluide au niveau suivant si le niveau actuel est complété
+
+### 🐛 Corrections de bugs
+
+- ✅ Correction du démarrage du jeu à la connexion avec niveau complété
+- ✅ Le mot s'affiche correctement après la connexion
+
+### 📊 Logs améliorés
+
+- `✅ Niveau X en cours (Y/Z)` si des mots restent disponibles
+- `✅ Niveau X déjà complété à la connexion` si niveau terminé
+
+---
+
 ## Version 1.0.3 (2025-10-03)
 
 ### 🐛 Corrections de bugs

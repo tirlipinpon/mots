@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.0.3
-const GAME_VERSION = '1.0.3';
+// Version: 1.2.2
+const GAME_VERSION = '1.2.2';
 
 class WordGuessingGame {
     constructor() {
@@ -48,11 +48,15 @@ class WordGuessingGame {
     }
 
     initializeGame() {
-        this.selectRandomWord();
-        this.ui.createLetterBoxes(this.currentWord.length);
-        this.timer.start();
-        this.hintManager.resetHelp();
-        this.currentInput = '';
+        // Ne lancer un mot que si l'utilisateur n'est pas connecté
+        // Si connecté, switchToAvailableLevel() dans loadUserData() gérera le démarrage
+        if (!this.userManager.isLoggedIn()) {
+            this.selectRandomWord();
+            this.ui.createLetterBoxes(this.currentWord.length);
+            this.timer.start();
+            this.hintManager.resetHelp();
+            this.currentInput = '';
+        }
     }
 
     selectRandomWord() {
@@ -67,6 +71,10 @@ class WordGuessingGame {
         
         this.currentWord = result.word;
         this.attempts = 0;
+        
+        console.log(`%c🎯 MOT ACTUEL: "${this.currentWord.toUpperCase()}"`, 'color: #f59e0b; font-size: 14px; font-weight: bold; background: #fef3c7; padding: 4px 8px; border-radius: 4px;');
+        console.log(`📏 Longueur: ${this.currentWord.length} lettres | 🎚️ Niveau: ${this.currentDifficulty}`);
+        console.log('');
         
         const hint = this.wordManager.getHint(this.currentWord, this.currentDifficulty);
         this.hintManager.showHint(hint);
@@ -198,8 +206,8 @@ class WordGuessingGame {
             return;
         }
         
-        // Lettres (a-z, A-Z)
-        if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+        // Lettres (a-z, A-Z) et trait d'union
+        if (e.key.length === 1 && /[a-zA-Z-]/.test(e.key)) {
             e.preventDefault();
             
             const letterBoxes = this.ui.domElements.wordDisplay.children;
@@ -509,7 +517,7 @@ class WordGuessingGame {
         
         // Si le niveau actuel est complété
         if (foundWords.length >= allWords.length) {
-            console.log(`✅ Niveau ${this.currentDifficulty} déjà complété`);
+            console.log(`✅ Niveau ${this.currentDifficulty} déjà complété à la connexion`);
             
             // Chercher le prochain niveau disponible
             const nextLevel = this.getNextAvailableLevel(this.currentDifficulty);
@@ -520,12 +528,27 @@ class WordGuessingGame {
                 this.ui.updateDifficultyButtons(nextLevel);
                 this.saveUserPreferences();
                 
-                // Redémarrer le jeu avec le nouveau niveau
-                this.newGame();
+                // Lancer un mot du nouveau niveau
+                this.selectRandomWord();
+                this.ui.createLetterBoxes(this.currentWord.length);
+                this.timer.start();
+                this.hintManager.resetHelp();
+                this.currentInput = '';
+                
+                this.ui.showFeedback(`⬆️ Passage au niveau ${this.ui.DIFFICULTY_NAMES[nextLevel]} ! 💪`, 'info');
             } else {
                 console.log(`🏆 Tous les niveaux sont complétés !`);
                 this.ui.showFeedback(`🏆 FÉLICITATIONS ! Tu as terminé TOUS les niveaux ! 👑`, 'success');
+                this.ui.createCelebration();
             }
+        } else {
+            // Le niveau actuel a encore des mots disponibles, lancer un mot
+            console.log(`✅ Niveau ${this.currentDifficulty} en cours (${foundWords.length}/${allWords.length})`);
+            this.selectRandomWord();
+            this.ui.createLetterBoxes(this.currentWord.length);
+            this.timer.start();
+            this.hintManager.resetHelp();
+            this.currentInput = '';
         }
     }
     
