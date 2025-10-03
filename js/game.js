@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.6.6
-const GAME_VERSION = '1.6.6';
+// Version: 1.6.7
+const GAME_VERSION = '1.6.7';
 
 class WordGuessingGame {
     constructor() {
@@ -176,16 +176,19 @@ class WordGuessingGame {
             const option = document.createElement('option');
             option.value = categoryKey;
             
-            // Compter les mots RESTANTS dans cette catégorie
-            const wordCount = getWordCountInCategory(
-                categoryKey, 
-                this.currentDifficulty, 
-                GAME_DATA, 
-                this.userManager
-            );
-            
-            // Afficher nom + nombre de mots restants
-            option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
+            // Afficher nom + nombre SEULEMENT si pas "toutes"
+            if (categoryKey === 'toutes') {
+                option.textContent = getCategoryName(categoryKey);
+            } else {
+                // Compter les mots RESTANTS dans cette catégorie
+                const wordCount = getWordCountInCategory(
+                    categoryKey, 
+                    this.currentDifficulty, 
+                    GAME_DATA, 
+                    this.userManager
+                );
+                option.textContent = `${getCategoryName(categoryKey)} (${wordCount})`;
+            }
             
             if (categoryKey === this.currentCategory) {
                 option.selected = true;

@@ -1,5 +1,28 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.6.7 (2025-10-03)
+
+### 🎨 Simplification des compteurs
+
+**Compteurs de niveaux** :
+
+- Avant : `🟢 Facile (4/82)`
+- Maintenant : `🟢 Facile (4)` ← Juste les mots trouvés
+
+**Liste des catégories** :
+
+- Avant : `📦 Toutes (82)`, `🐶 Animaux (5)`
+- Maintenant : `📦 Toutes`, `🐶 Animaux (5)` ← Pas de total pour "Toutes"
+
+**Avantages** :
+
+- ✅ Plus simple et clair
+- ✅ Focus sur le nombre de mots trouvés
+- ✅ "Toutes" reste neutre (pas de chiffre intimidant)
+- ✅ Interface moins chargée
+
+---
+
 ## Version 1.6.6 (2025-10-03)
 
 ### 🎯 Version stable - Système de catégories complet

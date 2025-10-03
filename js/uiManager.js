@@ -328,9 +328,9 @@ class UIManager {
         Object.entries(difficultyCounts).forEach(([difficulty, data]) => {
             const countElement = this.domElements[`${difficulty}Count`];
             if (isLoggedIn) {
-                countElement.textContent = `(${data.found}/${data.total})`;
+                countElement.textContent = `(${data.found})`;
             } else {
-                countElement.textContent = `(${data.total})`;
+                countElement.textContent = `(0)`;
             }
         });
     }
