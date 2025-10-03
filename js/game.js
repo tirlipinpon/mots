@@ -3,6 +3,7 @@ class WordGuessingGame {
     constructor() {
         // Initialiser les gestionnaires
         this.ui = new UIManager();
+        this.hintManager = new HintManager();
         this.wordManager = new WordManager(GAME_DATA);
         this.timer = new TimerManager(this.ui.domElements.timer);
         this.userManager = new UserManager();
@@ -16,6 +17,7 @@ class WordGuessingGame {
         this.attempts = 0;
         this.isCurrentWordCorrect = false;
         this.previousInputValue = '';
+        this.helpUsed = false;
         
         // Statistiques
         this.totalWordsFound = 0;
@@ -41,6 +43,7 @@ class WordGuessingGame {
         this.ui.createLetterBoxes(this.currentWord.length);
         this.timer.start();
         this.ui.disableNextWordButton();
+        this.hintManager.resetHelp();
         
         setTimeout(() => {
             this.ui.focusInput();
@@ -57,7 +60,7 @@ class WordGuessingGame {
         }
         
         const hint = this.wordManager.getHint(this.currentWord, this.currentDifficulty);
-        this.ui.showHint(hint);
+        this.hintManager.showHint(hint);
     }
 
     setupEventListeners() {
@@ -82,6 +85,9 @@ class WordGuessingGame {
         
         // Toggle score
         this.ui.domElements.scoreToggle.addEventListener('click', () => this.toggleSection('score'));
+        
+        // Bouton d'aide
+        this.hintManager.domElements.helpBtn.addEventListener('click', () => this.handleHelp());
         
         // Input du mot
         this.ui.domElements.wordInput.addEventListener('input', (e) => {
@@ -255,6 +261,7 @@ class WordGuessingGame {
         
         this.isCurrentWordCorrect = false;
         this.previousInputValue = '';
+        this.helpUsed = false;
         
         this.timer.stop();
         this.selectRandomWord();
@@ -263,8 +270,25 @@ class WordGuessingGame {
         this.timer.start();
         this.updateStats();
         this.ui.resetLetterBoxes();
+        this.hintManager.resetHelp();
         this.ui.disableNextWordButton();
         this.ui.focusInput();
+    }
+    
+    // Gérer l'aide - révéler la prochaine lettre manquante
+    handleHelp() {
+        if (this.helpUsed || this.isCurrentWordCorrect) {
+            return;
+        }
+        
+        const letterBoxes = this.ui.domElements.wordDisplay.children;
+        
+        const result = this.hintManager.revealNextLetter(this.currentWord, letterBoxes);
+        
+        if (result) {
+            this.helpUsed = true;
+            this.ui.showFeedback(`💡 Indice révélé ! Continue ! 💪`, 'info');
+        }
     }
 
     // Gestion de la connexion

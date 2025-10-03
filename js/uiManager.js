@@ -5,7 +5,6 @@ class UIManager {
         this.cacheDOMElements();
         
         // Constantes
-        this.EMOJI_REGEX = /([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA00}-\u{1FAFF}])+/gu;
         this.DIFFICULTY_NAMES = {
             'easy': '🟢 Facile',
             'medium': '🟠 Moyen', 
@@ -18,7 +17,6 @@ class UIManager {
         this.domElements = {
             wordDisplay: document.getElementById('wordDisplay'),
             wordInput: document.getElementById('wordInput'),
-            hintText: document.getElementById('hintText'),
             feedback: document.getElementById('feedback'),
             timer: document.getElementById('timer'),
             newGameBtn: document.getElementById('newGameBtn'),
@@ -60,16 +58,6 @@ class UIManager {
             progressionTrend: document.getElementById('progressionTrend'),
             difficultLetters: document.getElementById('difficultLetters')
         };
-    }
-    
-    // Afficher l'indice
-    showHint(hint) {
-        if (hint) {
-            const formattedHint = hint.replace(this.EMOJI_REGEX, '<span class="hint-icon">$1</span>');
-            this.domElements.hintText.innerHTML = formattedHint;
-        } else {
-            this.domElements.hintText.innerHTML = 'Devine le mot !';
-        }
     }
     
     // Créer l'affichage des boîtes de lettres

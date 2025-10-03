@@ -1,0 +1,124 @@
+---
+alwaysApply: true
+---
+
+# JavaScript Development Guidelines
+
+## 1. Code Style
+
+- Always use `const` by default, `let` only when reassignment is needed. Never use `var`.
+- Use `===` and `!==` instead of `==` and `!=`.
+- Follow `camelCase` for variables and functions, `PascalCase` for classes, `UPPER_CASE` for constants.
+- End every statement with `;`.
+- Use 2 spaces for indentation.
+- Keep functions small and focused (single responsibility).
+- Prefer pure functions (no side effects).
+- Avoid magic numbers – use named constants.
+
+## 2. Clean Code Practices
+
+- Write self-explanatory code. Use comments only for complex logic.
+- Delete unused code and imports immediately.
+- Validate inputs and handle errors gracefully (`try/catch`, `.catch()` for promises).
+- Use meaningful variable and function names (`getUserProfile` instead of `getData`).
+- Keep functions under 40 lines and files under ~300 lines when possible.
+- Prefer immutability (do not mutate objects/arrays if not required).
+
+## 3. Asynchronous Code
+
+- Prefer `async/await` over `.then()` for better readability.
+- Always handle promise rejections.
+- Use `Promise.all` for parallel tasks when safe.
+
+## 4. Testing
+
+- Write unit tests for business logic.
+- Use mocks/stubs for external APIs.
+- Keep tests independent and repeatable.
+
+## 5. Error Handling & Logging
+
+- Do not swallow errors — log them or propagate upwards.
+- Use structured logging (e.g., `console.error("User fetch failed", { userId, error })`).
+- Never expose sensitive data in logs.
+
+## 6. Security
+
+- Always escape or sanitize user input.
+- Avoid `eval()` and dynamically constructed code.
+- Use HTTPS for API calls.
+- Store secrets in environment variables, never in source code.
+
+## 7. Architecture Guidelines
+
+- Follow **Separation of Concerns**:
+  - `components/` → UI components
+  - `services/` → API calls, business logic
+  - `utils/` → helpers and pure functions
+  - `models/` → data structures or types
+- Use clear module boundaries (no circular dependencies).
+- Keep the dependency graph shallow (avoid deep nesting).
+- Organize features in **feature-based folders** when projects scale (`/features/user`, `/features/cart`).
+- Implement **layered architecture**:
+  - **Presentation layer** → UI, components
+  - **Business layer** → services, logic
+  - **Data layer** → API clients, database access
+- Apply **DRY** (Don’t Repeat Yourself) but avoid over-abstraction.
+- Keep the public API of each module minimal and well-defined.
+- Ensure scalability: code should support growth in features without heavy refactoring.
+
+## 8. Example Folder Structure
+
+src/
+├── components/ # Reusable UI components
+├── features/ # Feature-based folders (user, product, etc.)
+├── services/ # API calls, core business logic
+├── utils/ # Helper functions
+├── models/ # Data models and types
+├── tests/ # Unit and integration tests
+└── index.js
+
+---
+
+## 9. Example (Bad vs Good)
+
+````js
+// ❌ Bad
+var data = fetch("/api/user/1")
+  .then(res => res.json())
+  .then(d => { console.log(d) });
+
+// ✅ Good
+async function getUser(userId) {
+  try {
+    const response = await fetch(`/api/user/${userId}`);
+    if (!response.ok) throw new Error("Request failed");
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to fetch user", { userId, error });
+    throw error;
+  }
+}
+
+
+---
+
+## 9. Example (Bad vs Good)
+```js
+// ❌ Bad
+var data = fetch("/api/user/1")
+  .then(res => res.json())
+  .then(d => { console.log(d) });
+
+// ✅ Good
+async function getUser(userId) {
+  try {
+    const response = await fetch(`/api/user/${userId}`);
+    if (!response.ok) throw new Error("Request failed");
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to fetch user", { userId, error });
+    throw error;
+  }
+}
+````

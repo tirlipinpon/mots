@@ -43,11 +43,16 @@
             <div class="hint-text" id="hintText">Animal domestique qui miaule et chasse les souris</div>
         </div>
 
-        <div class="word-display" id="wordDisplay">
-            <div class="letter-box">?</div>
-            <div class="letter-box">?</div>
-            <div class="letter-box">?</div>
-            <div class="letter-box">?</div>
+        <div class="revealed-letter hidden" id="revealedLetter"></div>
+
+        <div class="word-display-container">
+            <div class="word-display" id="wordDisplay">
+                <div class="letter-box">?</div>
+                <div class="letter-box">?</div>
+                <div class="letter-box">?</div>
+                <div class="letter-box">?</div>
+            </div>
+            <button class="help-btn" id="helpBtn" title="Révéler une lettre">?</button>
         </div>
 
         <div class="input-section">
@@ -160,6 +165,7 @@
     <script src="js/userManager.js"></script>
     <script src="js/statsManager.js"></script>
     <script src="js/uiManager.js"></script>
+    <script src="js/hintManager.js"></script>
     <script src="js/wordManager.js"></script>
     <script src="js/timerManager.js"></script>
     

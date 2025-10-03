@@ -364,14 +364,83 @@ h1 {
     line-height: 1;
 }
 
+.revealed-letter {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #667eea;
+    background: linear-gradient(135deg, #e6f3ff, #b3d9ff);
+    border: 3px solid #667eea;
+    border-radius: 15px;
+    padding: 15px 25px;
+    margin: 10px auto;
+    text-align: center;
+    max-width: 400px;
+    animation: fadeInBounce 0.5s ease;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+@keyframes fadeInBounce {
+    0% { 
+        opacity: 0;
+        transform: translateY(-20px) scale(0.8);
+    }
+    60% {
+        transform: translateY(5px) scale(1.05);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.word-display-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
 .word-display {
     font-size: 2em;
     font-weight: bold;
-    margin: 20px 0;
     min-height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.help-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #667eea;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    font-size: 1.8em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.help-btn:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.5);
+}
+
+.help-btn:active {
+    transform: scale(0.95);
+}
+
+.help-btn.used {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .letter-box {
