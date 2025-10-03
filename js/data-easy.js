@@ -72,7 +72,7 @@ const DATA_EASY = {
     "ange": { hint: "😇 Créature céleste", cat: 8 },
     
     // Corps (9)
-    "œil": { hint: "👁️ Pour voir", cat: 9 },
+    "oeil": { hint: "👁️ Pour voir", cat: 9 },
     "main": { hint: "✋ Avec cinq doigts", cat: 9 },
     "pied": { hint: "🦶 Pour marcher", cat: 9 },
     "bras": { hint: "💪 Entre épaule et main", cat: 9 },

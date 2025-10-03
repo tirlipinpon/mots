@@ -24,7 +24,7 @@ const DATA_HARD = {
     "lumière": { hint: "💡 Ce qui éclaire et rend visible", cat: 3 },
     "montagne": { hint: "⛰️ Grande élévation de terre", cat: 3 },
     "tonnerre": { hint: "⚡ Bruit fort pendant l'orage", cat: 3 },
-    "arcenciel": { hint: "🌈 Arc-en-ciel avec toutes les couleurs", cat: 3 },
+    "arcenciel": { hint: "🌈 Avec toutes les couleurs", cat: 3 },
     
     // Véhicules (4)
     "téléphone": { hint: "📱 Appareil pour appeler", cat: 4 },
@@ -32,7 +32,7 @@ const DATA_HARD = {
     "voiture": { hint: "🚗 Véhicule à 4 roues", cat: 4 },
     
     // Nombres (5)
-    "quatorze": { hint: "🔢 Quatorze (14)", cat: 5 },
+    "quatorze": { hint: "🔢 (14)", cat: 5 },
     
     // Temps (6)
     "février": { hint: "❄️ Deuxième mois de l'année", cat: 6 },
