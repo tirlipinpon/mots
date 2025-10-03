@@ -1,6 +1,14 @@
 // Jeu principal - Orchestrateur
+// Version: 1.0.3
+const GAME_VERSION = '1.0.3';
+
 class WordGuessingGame {
     constructor() {
+        // Afficher la version
+        console.log(`%c🎮 Jeu de Devinette de Mots - Version ${GAME_VERSION}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
+        console.log(`%c📅 ${new Date().toLocaleString('fr-FR')}`, 'color: #10b981; font-size: 12px;');
+        console.log('');
+        
         // Initialiser les gestionnaires
         this.ui = new UIManager();
         this.hintManager = new HintManager();
@@ -49,15 +57,99 @@ class WordGuessingGame {
 
     selectRandomWord() {
         const result = this.wordManager.selectRandomWord(this.currentDifficulty, this.userManager);
+        
+        // Si tous les mots sont complétés (pas de mot disponible)
+        if (result.allWordsCompleted) {
+            console.log(`🎉 Niveau ${this.currentDifficulty} complété !`);
+            this.handleLevelCompleted(this.currentDifficulty);
+            return; // Stopper ici, ne pas continuer
+        }
+        
         this.currentWord = result.word;
         this.attempts = 0;
         
-        if (result.allWordsCompleted) {
-            this.ui.showFeedback(`🎉 Félicitations ! Tu as trouvé tous les mots du niveau ${this.currentDifficulty} ! Recommençons ! 🎉`, 'success');
-        }
-        
         const hint = this.wordManager.getHint(this.currentWord, this.currentDifficulty);
         this.hintManager.showHint(hint);
+    }
+    
+    // Gérer la complétion d'un niveau
+    handleLevelCompleted(completedLevel) {
+        console.log(`🏆 handleLevelCompleted appelé pour: ${completedLevel}`);
+        
+        // Bloquer le bouton du niveau complété
+        this.ui.disableDifficultyButton(completedLevel);
+        
+        // Félicitations pour le niveau
+        const levelNames = {
+            easy: '🟢 Facile',
+            medium: '🟠 Moyen',
+            hard: '🔴 Difficile'
+        };
+        
+        this.ui.showFeedback(`🎉 BRAVO ! Niveau ${levelNames[completedLevel]} complété ! 🎉`, 'success');
+        this.ui.createCelebration();
+        
+        // Vérifier si tous les niveaux sont complétés
+        const allLevelsCompleted = this.checkAllLevelsCompleted();
+        
+        if (allLevelsCompleted) {
+            // Tous les niveaux sont terminés !
+            setTimeout(() => {
+                this.ui.showFeedback(`🏆 FÉLICITATIONS ! Tu as terminé TOUS les niveaux du jeu ! 🏆 Tu es un CHAMPION ! 👑`, 'success');
+                this.ui.createCelebration();
+            }, 2000);
+        } else {
+            // Passer au niveau suivant
+            setTimeout(() => {
+                const nextLevel = this.getNextAvailableLevel(completedLevel);
+                if (nextLevel) {
+                    this.setDifficulty(nextLevel);
+                    this.ui.showFeedback(`⬆️ Passage au niveau ${levelNames[nextLevel]} ! 💪`, 'info');
+                }
+            }, 3000);
+        }
+    }
+    
+    // Vérifier si tous les niveaux sont complétés
+    checkAllLevelsCompleted() {
+        if (!this.userManager.isLoggedIn()) return false;
+        
+        const difficulties = ['easy', 'medium', 'hard'];
+        
+        for (const difficulty of difficulties) {
+            const allWords = this.wordManager.getWordsByDifficulty(difficulty);
+            const foundWords = this.userManager.getWordsFoundByDifficulty(difficulty);
+            
+            if (foundWords.length < allWords.length) {
+                return false; // Il reste des mots dans ce niveau
+            }
+        }
+        
+        console.log('🏆 TOUS LES NIVEAUX COMPLÉTÉS !');
+        return true;
+    }
+    
+    // Obtenir le prochain niveau disponible
+    getNextAvailableLevel(currentLevel) {
+        if (!this.userManager.isLoggedIn()) return null;
+        
+        const levelOrder = ['easy', 'medium', 'hard'];
+        const currentIndex = levelOrder.indexOf(currentLevel);
+        
+        // Chercher le prochain niveau non complété
+        for (let i = currentIndex + 1; i < levelOrder.length; i++) {
+            const difficulty = levelOrder[i];
+            const allWords = this.wordManager.getWordsByDifficulty(difficulty);
+            const foundWords = this.userManager.getWordsFoundByDifficulty(difficulty);
+            
+            if (foundWords.length < allWords.length) {
+                console.log(`➡️ Prochain niveau disponible: ${difficulty}`);
+                return difficulty;
+            }
+        }
+        
+        // Si on est au dernier niveau ou tous complétés, retourner null
+        return null;
     }
 
     setupEventListeners() {
@@ -98,17 +190,10 @@ class WordGuessingGame {
         // Touche Backspace
         if (e.key === 'Backspace') {
             e.preventDefault();
-            console.log('⬅️ BACKSPACE pressé');
-            console.log('📝 currentInput avant:', this.currentInput);
             
             if (this.currentInput.length > 0) {
-                // Supprimer simplement le dernier caractère
                 this.currentInput = this.currentInput.slice(0, -1);
-                console.log('📝 currentInput après suppression:', this.currentInput);
-                console.log('🔄 handleInput va mettre à jour l\'affichage et repositionner le curseur');
                 this.handleInput(this.currentInput);
-            } else {
-                console.log('⚠️ currentInput vide - rien à supprimer');
             }
             return;
         }
@@ -117,58 +202,39 @@ class WordGuessingGame {
         if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
             e.preventDefault();
             
-            console.log('🔤 Touche pressée:', e.key);
-            console.log('📝 currentInput avant:', this.currentInput);
-            console.log('📏 Longueur mot:', this.currentWord.length);
-            
             const letterBoxes = this.ui.domElements.wordDisplay.children;
-            
-            // Obtenir la position VISUELLE du curseur (où il est affiché)
             const cursorPosition = this.ui.getCursorPosition();
-            console.log('👁️ Position visuelle du curseur:', cursorPosition);
             
             // Vérifier si on a une position valide
             if (cursorPosition === -1 || cursorPosition >= this.currentWord.length) {
-                console.log('⚠️ Position invalide ou mot complet');
                 this.ui.showFeedback('⚠️ Mot complet ! Utilise Backspace pour corriger ⬅️', 'warning');
                 return;
             }
             
             const currentBox = letterBoxes[cursorPosition];
-            console.log('📦 Contenu de la boîte au curseur:', currentBox.textContent);
-            console.log('🎨 Classes de la boîte:', currentBox.className);
             
             // Si la boîte contient déjà une lettre non-verte, la remplacer
             if (currentBox.textContent !== '?' && !currentBox.classList.contains('letter-correct')) {
-                console.log('🔄 REMPLACEMENT: Suppression automatique puis ajout de la nouvelle lettre');
                 // Supprimer d'abord le dernier caractère (la lettre actuelle)
                 if (this.currentInput.length > 0) {
                     this.currentInput = this.currentInput.slice(0, -1);
-                    console.log('📝 Après suppression:', this.currentInput);
                 }
             }
             
-            console.log('✅ OK: On peut écrire');
             this.currentInput += e.key;
-            console.log('📝 currentInput après:', this.currentInput);
             this.handleInput(this.currentInput);
         }
     }
 
     handleInput(inputValue) {
-        console.log('🎮 === DÉBUT handleInput ===');
-        console.log('📥 inputValue reçu:', inputValue);
-        
         const letterBoxes = this.ui.domElements.wordDisplay.children;
         
         // Compter les lettres vertes consécutives
         const consecutiveGreenCount = this.wordManager.countConsecutiveGreenLetters(letterBoxes);
-        console.log('🟢 Lettres vertes dans handleInput:', consecutiveGreenCount);
         
         // Limiter la longueur
         let input = inputValue;
         if (input.length > this.currentWord.length) {
-            console.log('⚠️ Input trop long, tronqué');
             input = input.substring(0, this.currentWord.length);
             this.currentInput = input;
         }
@@ -179,25 +245,20 @@ class WordGuessingGame {
             for (let i = 0; i < consecutiveGreenCount; i++) {
                 greenLetters += letterBoxes[i].textContent;
             }
-            console.log('🟢 Lettres vertes extraites:', greenLetters);
             
             // Si l'input ne commence pas par les lettres vertes, le corriger
             if (!input.toUpperCase().startsWith(greenLetters)) {
-                console.log('🔧 Correction: ajout des lettres vertes au début');
                 input = greenLetters + input.substring(consecutiveGreenCount);
                 this.currentInput = input;
             }
             
             // Empêcher de supprimer les lettres vertes
             if (input.length < consecutiveGreenCount) {
-                console.log('❌ BLOQUÉ: Tentative de suppression des lettres vertes');
                 this.currentInput = this.previousInputValue || greenLetters;
                 this.ui.showFeedback('Tu ne peux pas supprimer les lettres vertes ! 🚫', 'warning');
                 return;
             }
         }
-        
-        console.log('📝 Input final après vérifications:', input);
         
         // Analyser la tentative
         let result = null;
@@ -214,7 +275,6 @@ class WordGuessingGame {
                 if (result.letterStates[i] === 'correct') {
                     // Une lettre est devenue verte, masquer le hint révélé
                     this.hintManager.hideRevealedLetter();
-                    console.log('🎯 Lettre correcte trouvée → masquage du hint révélé');
                     break;
                 }
             }
@@ -231,8 +291,6 @@ class WordGuessingGame {
         this.provideFeedback(input, result);
         
         this.previousInputValue = input;
-        console.log('🎮 === FIN handleInput ===');
-        console.log('');
     }
 
     provideFeedback(input, result) {
@@ -312,6 +370,8 @@ class WordGuessingGame {
     }
 
     saveProgress() {
+        console.log(`💾 Sauvegarde du mot "${this.currentWord}" (${this.currentDifficulty})`);
+        
         this.userManager.addWordFound(this.currentWord, this.currentDifficulty);
         this.userManager.updateStats({
             totalWordsFound: this.totalWordsFound,
@@ -328,6 +388,8 @@ class WordGuessingGame {
         const isPerfect = this.attempts === 1;
         const timeElapsed = this.timer.getElapsed();
         this.statsManager.addWordFound(this.currentWord, this.currentDifficulty, timeElapsed, this.attempts, isPerfect);
+        
+        console.log(`✅ Sauvegarde du mot terminée`);
     }
 
     updateUI() {
@@ -335,6 +397,7 @@ class WordGuessingGame {
         this.updateStats();
         this.updateDifficultyCounts();
         this.updateLevelStatus();
+        this.updateDifficultyButtonsState();
     }
 
     newGame() {
@@ -399,11 +462,20 @@ class WordGuessingGame {
         this.updateVisibility();
         this.updateLevelStatus();
         this.updateDifficultyCounts();
+        
+        // Débloquer tous les boutons de difficulté
+        ['easy', 'medium', 'hard'].forEach(difficulty => {
+            this.ui.enableDifficultyButton(difficulty);
+        });
+        
         this.ui.showFeedback('Déconnexion réussie. Tes données sont sauvegardées.', 'info');
     }
 
     loadUserData() {
         if (this.userManager.isLoggedIn()) {
+            // Nettoyer les mots trouvés en excès
+            this.cleanupFoundWords();
+            
             const userStats = this.userManager.getUserStats();
             this.totalWordsFound = userStats.totalWordsFound;
             this.wordTimes = userStats.wordTimes;
@@ -419,7 +491,87 @@ class WordGuessingGame {
             this.updateStats();
             this.updateDifficultyCounts();
             this.updateLevelStatus();
+            this.updateDifficultyButtonsState();
+            
+            // Vérifier si le niveau actuel est complété et passer au suivant si nécessaire
+            this.switchToAvailableLevel();
         }
+    }
+    
+    // Passer automatiquement à un niveau disponible
+    switchToAvailableLevel() {
+        if (!this.userManager.isLoggedIn()) return;
+        
+        const allWords = this.wordManager.getWordsByDifficulty(this.currentDifficulty);
+        const foundWords = this.userManager.getWordsFoundByDifficulty(this.currentDifficulty);
+        
+        console.log(`🔍 Vérification niveau actuel: ${this.currentDifficulty} (${foundWords.length}/${allWords.length})`);
+        
+        // Si le niveau actuel est complété
+        if (foundWords.length >= allWords.length) {
+            console.log(`✅ Niveau ${this.currentDifficulty} déjà complété`);
+            
+            // Chercher le prochain niveau disponible
+            const nextLevel = this.getNextAvailableLevel(this.currentDifficulty);
+            
+            if (nextLevel) {
+                console.log(`➡️ Passage automatique au niveau ${nextLevel}`);
+                this.currentDifficulty = nextLevel;
+                this.ui.updateDifficultyButtons(nextLevel);
+                this.saveUserPreferences();
+                
+                // Redémarrer le jeu avec le nouveau niveau
+                this.newGame();
+            } else {
+                console.log(`🏆 Tous les niveaux sont complétés !`);
+                this.ui.showFeedback(`🏆 FÉLICITATIONS ! Tu as terminé TOUS les niveaux ! 👑`, 'success');
+            }
+        }
+    }
+    
+    // Nettoyer les mots trouvés invalides (doublons et mots en excès)
+    cleanupFoundWords() {
+        const difficulties = ['easy', 'medium', 'hard'];
+        
+        console.log('🧹 Nettoyage des mots trouvés...');
+        
+        difficulties.forEach(difficulty => {
+            const allWords = this.wordManager.getWordsByDifficulty(difficulty);
+            const foundWords = this.userManager.getWordsFoundByDifficulty(difficulty);
+            
+            console.log(`  ${difficulty}: ${foundWords.length} trouvés / ${allWords.length} disponibles`);
+            
+            // Filtrer pour garder seulement les mots valides
+            const validWords = foundWords.filter(word => allWords.includes(word));
+            
+            if (validWords.length !== foundWords.length) {
+                console.log(`  ⚠️ ${foundWords.length - validWords.length} mot(s) invalide(s) supprimé(s)`);
+                this.userManager.wordsFoundByDifficulty[difficulty] = validWords;
+                this.userManager.saveUserData();
+            }
+        });
+        
+        console.log('✅ Nettoyage terminé');
+    }
+    
+    // Mettre à jour l'état des boutons de difficulté (bloquer ceux qui sont complétés)
+    updateDifficultyButtonsState() {
+        if (!this.userManager.isLoggedIn()) return;
+        
+        const difficulties = ['easy', 'medium', 'hard'];
+        
+        difficulties.forEach(difficulty => {
+            const allWords = this.wordManager.getWordsByDifficulty(difficulty);
+            const foundWords = this.userManager.getWordsFoundByDifficulty(difficulty);
+            
+            if (foundWords.length >= allWords.length) {
+                // Ce niveau est complété, bloquer le bouton
+                this.ui.disableDifficultyButton(difficulty);
+            } else {
+                // Ce niveau n'est pas complété, débloquer le bouton
+                this.ui.enableDifficultyButton(difficulty);
+            }
+        });
     }
 
     resetGameStats() {
@@ -439,6 +591,17 @@ class WordGuessingGame {
 
     // Changer la difficulté
     setDifficulty(difficulty) {
+        // Vérifier si le niveau est complété (ne pas permettre de le re-sélectionner)
+        if (this.userManager.isLoggedIn()) {
+            const allWords = this.wordManager.getWordsByDifficulty(difficulty);
+            const foundWords = this.userManager.getWordsFoundByDifficulty(difficulty);
+            
+            if (foundWords.length >= allWords.length) {
+                this.ui.showFeedback(`✅ Niveau ${this.ui.DIFFICULTY_NAMES[difficulty]} déjà complété !`, 'warning');
+                return;
+            }
+        }
+        
         this.currentDifficulty = difficulty;
         this.ui.updateDifficultyButtons(difficulty);
         this.ui.showFeedback(`Niveau changé : ${this.ui.DIFFICULTY_NAMES[difficulty]}`, 'info');
@@ -450,11 +613,15 @@ class WordGuessingGame {
         const difficulties = ['easy', 'medium', 'hard'];
         const counts = {};
         
+        console.log('📊 Mise à jour des compteurs de difficulté');
+        
         difficulties.forEach(difficulty => {
             const allWords = this.wordManager.getWordsByDifficulty(difficulty);
             const foundWords = this.userManager.isLoggedIn() 
                 ? this.userManager.getWordsFoundByDifficulty(difficulty) 
                 : [];
+            
+            console.log(`  ${difficulty}: ${foundWords.length}/${allWords.length} mots trouvés`);
             
             counts[difficulty] = {
                 found: foundWords.length,
@@ -557,6 +724,22 @@ class WordGuessingGame {
 }
 
 // Démarrer le jeu
+let gameInstance;
 document.addEventListener('DOMContentLoaded', () => {
-    new WordGuessingGame();
+    gameInstance = new WordGuessingGame();
+    
+    // Fonction globale pour réinitialiser les données (accessible dans la console)
+    window.resetUserData = () => {
+        if (gameInstance && gameInstance.userManager && gameInstance.userManager.isLoggedIn()) {
+            const username = gameInstance.userManager.getCurrentUser();
+            if (confirm(`⚠️ Êtes-vous sûr de vouloir réinitialiser TOUTES les données de ${username} ?`)) {
+                gameInstance.userManager.resetAllUserData();
+                location.reload();
+            }
+        } else {
+            console.log('⚠️ Aucun utilisateur connecté');
+        }
+    };
+    
+    console.log('💡 Astuce: Tape resetUserData() dans la console pour réinitialiser tes données');
 });

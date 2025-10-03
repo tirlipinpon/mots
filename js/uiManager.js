@@ -113,31 +113,23 @@ class UIManager {
     
     // Mettre à jour le curseur visuel basé sur l'input
     updateCursorFromInput(input, letterBoxes) {
-        console.log('🎯 Mise à jour curseur - input:', input);
-        
         // Retirer le curseur de toutes les boîtes
         for (let i = 0; i < letterBoxes.length; i++) {
             letterBoxes[i].classList.remove('letter-cursor');
         }
         
         // Trouver la première boîte non-verte (rouge, orange, ou vide)
-        // On parcourt de gauche à droite
         let targetPosition = -1;
         
         for (let i = 0; i < letterBoxes.length; i++) {
             const box = letterBoxes[i];
             const isGreen = box.classList.contains('letter-correct');
-            const isEmpty = box.textContent === '?';
-            const hasLetter = box.textContent !== '?';
-            
-            console.log(`Position ${i}: "${box.textContent}" - Verte:${isGreen}, Vide:${isEmpty}`);
             
             // On cherche la première boîte qui est :
             // - Soit vide (?)
             // - Soit avec une lettre incorrecte (rouge/orange)
             if (!isGreen) {
                 targetPosition = i;
-                console.log(`📍 Curseur trouvé sur position ${i} (première non-verte)`);
                 break;
             }
         }
@@ -145,9 +137,6 @@ class UIManager {
         // Si on a trouvé une position, ajouter le curseur
         if (targetPosition !== -1 && targetPosition < letterBoxes.length) {
             letterBoxes[targetPosition].classList.add('letter-cursor');
-            console.log('✅ Curseur ajouté sur position:', targetPosition);
-        } else {
-            console.log('⚠️ Aucune position valide - pas de curseur (toutes vertes?)');
         }
         
         // Retourner la position pour l'utiliser dans game.js
@@ -300,6 +289,29 @@ class UIManager {
             btn.classList.remove('active');
         });
         this.domElements[`${currentDifficulty}Btn`].classList.add('active');
+    }
+    
+    // Bloquer un bouton de difficulté (niveau complété)
+    disableDifficultyButton(difficulty) {
+        const btn = this.domElements[`${difficulty}Btn`];
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('completed');
+            btn.style.opacity = '0.6';
+            btn.style.cursor = 'not-allowed';
+            console.log(`🔒 Bouton ${difficulty} bloqué`);
+        }
+    }
+    
+    // Débloquer un bouton de difficulté
+    enableDifficultyButton(difficulty) {
+        const btn = this.domElements[`${difficulty}Btn`];
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('completed');
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        }
     }
     
     // Mettre à jour les compteurs de difficulté

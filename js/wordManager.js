@@ -22,12 +22,13 @@ class WordManager {
         if (userManager.isLoggedIn()) {
             availableWords = userManager.getAvailableWords(allWords, difficulty);
             
-            // Si tous les mots sont trouvés, réinitialiser
+            console.log(`🔍 Sélection mot ${difficulty}: ${availableWords.length}/${allWords.length} disponibles`);
+            
+            // Si tous les mots sont trouvés, signaler la complétion
             if (availableWords.length === 0) {
-                userManager.resetDifficultyWords(difficulty);
-                availableWords = allWords;
+                console.log(`🏆 Tous les mots ${difficulty} trouvés !`);
                 return {
-                    word: availableWords[Math.floor(Math.random() * availableWords.length)],
+                    word: null,
                     allWordsCompleted: true
                 };
             }
