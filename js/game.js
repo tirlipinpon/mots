@@ -1,12 +1,26 @@
 // Jeu principal - Orchestrateur
-// Version: 1.6.7
-const GAME_VERSION = '1.6.7';
+// Version: 1.7.0
+const GAME_VERSION = '1.7.0';
 
 class WordGuessingGame {
     constructor() {
         // Afficher la version
         console.log(`%c🎮 Jeu de Devinette de Mots - Version ${GAME_VERSION}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
         console.log(`%c📅 ${new Date().toLocaleString('fr-FR')}`, 'color: #10b981; font-size: 12px;');
+        console.log('');
+        
+        // Afficher la quantité de mots par niveau
+        const easyCount = Object.keys(GAME_DATA.easy).length;
+        const mediumCount = Object.keys(GAME_DATA.medium).length;
+        const hardCount = Object.keys(GAME_DATA.hard).length;
+        const totalCount = easyCount + mediumCount + hardCount;
+        
+        console.log(`%c📊 Statistiques des mots :`, 'color: #f59e0b; font-weight: bold;');
+        console.log(`   🟢 Facile : ${easyCount} mots`);
+        console.log(`   🟠 Moyen : ${mediumCount} mots`);
+        console.log(`   🔴 Difficile : ${hardCount} mots`);
+        console.log(`   ─────────────────────`);
+        console.log(`   📈 TOTAL : ${totalCount} mots disponibles`);
         console.log('');
         
         // Initialiser les gestionnaires

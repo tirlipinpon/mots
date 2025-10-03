@@ -1,5 +1,111 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.7.0 (2025-10-03)
+
+### 📊 Amélioration : Logs de statistiques au démarrage
+
+- ✅ Affichage automatique du nombre de mots par niveau dans la console
+- ✅ Total général calculé et affiché
+- ✅ Logs colorés et formatés
+
+**Exemple de log** :
+
+```
+🎮 Jeu de Devinette de Mots - Version 1.7.0
+📅 03/10/2025 14:30:00
+
+📊 Statistiques des mots :
+   🟢 Facile : 82 mots
+   🟠 Moyen : 145 mots
+   🔴 Difficile : 91 mots
+   ─────────────────────
+   📈 TOTAL : 318 mots disponibles
+```
+
+**Utile pour** :
+
+- Vérifier rapidement le contenu du jeu
+- Déboguer les ajouts de mots
+- Suivre la croissance du vocabulaire
+
+---
+
+## Version 1.6.9 (2025-10-03)
+
+### 🔧 Correction : Validation 7+ lettres pour niveau DIFFICILE
+
+**Regex utilisée** : `/^[a-zàâäéèêëïîôùûüÿœæç-]{7,}$/i`
+
+**Mots corrigés** (< 7 lettres → 7+ lettres) :
+
+- ❌ `crêpes` (6) → ✅ `crêperie` (8)
+- ❌ `gateau` (6) → ✅ `gâteaux` (7)
+- ❌ `camion` (6) → ✅ `camion-poubelle` (15)
+- ❌ `amitié` (6) → ✅ `tendresse` (9)
+- ❌ `elsa` (4) → ✅ `la-reine-des-neiges` (19)
+- ❌ `rigolo` (6) → ✅ `rigolote` (8)
+- ❌ `bisou` (5) → ✅ `affection` (9)
+- ❌ `câlin` (5) → ✅ `gentillesse` (11)
+
+**✅ Tous les mots ont maintenant 7+ lettres !**
+
+---
+
+## Version 1.6.8 (2025-10-03)
+
+### 🎉 Ajout de mots rigolos au niveau DIFFICILE
+
+**+47 nouveaux mots de 7+ lettres** (47 → 94 mots au total !)
+
+**🐶 Animaux (+8)** :
+
+- dinosaure, kangourou, crocodile, hippopotame
+- perroquet, coccinelle, panthère, pieuvre
+
+**🍎 Nourriture (+7)** :
+
+- spaghetti, sandwich, biscuit, popcorn
+- crêpes, gateau, confiture
+
+**🌍 Nature (+5)** :
+
+- palmier, coquillage, cascade, étoiles, planète
+
+**🚗 Véhicules (+3)** :
+
+- hélicoptère, tracteur, camion
+
+**🦸 Personnages (+7)** :
+
+- pinocchio, cendrillon, raiponce, pocahontas
+- ironman, captain, elsa
+
+**🧍 Corps (+4)** :
+
+- cheveux, cerveau, squelette, estomac
+
+**🏠 Maison (+4)** :
+
+- cuisine, chambre, fenêtre, escalier
+
+**⚔️ Objets (+6)** :
+
+- parapluie, balançoire, toboggan, trampoline
+- télévision, dinosaure (jouet)
+
+**⚽ Sports (+4)** :
+
+- football, basketball, natation, gymnastique
+
+**🎲 Divers (+9)** :
+
+- fantôme, licorne, rigolo, surprise, vacances
+- histoire, bisou, câlin, champion
+
+**Total niveau DIFFICILE : 94 mots !** 🎊
+
+---
+
 ## Version 1.6.7 (2025-10-03)
 
 ### 🎨 Simplification des compteurs
