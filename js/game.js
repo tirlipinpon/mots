@@ -43,7 +43,6 @@ class WordGuessingGame {
         this.selectRandomWord();
         this.ui.createLetterBoxes(this.currentWord.length);
         this.timer.start();
-        this.ui.disableNextWordButton();
         this.hintManager.resetHelp();
         this.currentInput = '';
     }
@@ -62,13 +61,6 @@ class WordGuessingGame {
     }
 
     setupEventListeners() {
-        // Bouton nouveau mot
-        this.ui.domElements.newGameBtn.addEventListener('click', () => {
-            if (this.isCurrentWordCorrect) {
-                this.newGame();
-            }
-        });
-        
         // Connexion/Déconnexion
         this.ui.domElements.loginBtn.addEventListener('click', () => this.handleLogin());
         this.ui.domElements.logoutBtn.addEventListener('click', () => this.handleLogout());
@@ -97,22 +89,26 @@ class WordGuessingGame {
             return;
         }
         
-        // Touche Entrée
+        // Touche Entrée - désactivée car passage automatique au mot suivant
         if (e.key === 'Enter') {
-            if (this.isCurrentWordCorrect) {
-                this.newGame();
-            } else {
-                this.ui.showFeedback('Continue ! Tu n\'as pas encore trouvé le bon mot ! 💪', 'warning');
-            }
+            e.preventDefault();
             return;
         }
         
         // Touche Backspace
         if (e.key === 'Backspace') {
             e.preventDefault();
+            console.log('⬅️ BACKSPACE pressé');
+            console.log('📝 currentInput avant:', this.currentInput);
+            
             if (this.currentInput.length > 0) {
+                // Supprimer simplement le dernier caractère
                 this.currentInput = this.currentInput.slice(0, -1);
+                console.log('📝 currentInput après suppression:', this.currentInput);
+                console.log('🔄 handleInput va mettre à jour l\'affichage et repositionner le curseur');
                 this.handleInput(this.currentInput);
+            } else {
+                console.log('⚠️ currentInput vide - rien à supprimer');
             }
             return;
         }
@@ -120,22 +116,59 @@ class WordGuessingGame {
         // Lettres (a-z, A-Z)
         if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
             e.preventDefault();
-            if (this.currentInput.length < this.currentWord.length) {
-                this.currentInput += e.key;
-                this.handleInput(this.currentInput);
+            
+            console.log('🔤 Touche pressée:', e.key);
+            console.log('📝 currentInput avant:', this.currentInput);
+            console.log('📏 Longueur mot:', this.currentWord.length);
+            
+            const letterBoxes = this.ui.domElements.wordDisplay.children;
+            
+            // Obtenir la position VISUELLE du curseur (où il est affiché)
+            const cursorPosition = this.ui.getCursorPosition();
+            console.log('👁️ Position visuelle du curseur:', cursorPosition);
+            
+            // Vérifier si on a une position valide
+            if (cursorPosition === -1 || cursorPosition >= this.currentWord.length) {
+                console.log('⚠️ Position invalide ou mot complet');
+                this.ui.showFeedback('⚠️ Mot complet ! Utilise Backspace pour corriger ⬅️', 'warning');
+                return;
             }
+            
+            const currentBox = letterBoxes[cursorPosition];
+            console.log('📦 Contenu de la boîte au curseur:', currentBox.textContent);
+            console.log('🎨 Classes de la boîte:', currentBox.className);
+            
+            // Si la boîte contient déjà une lettre non-verte, la remplacer
+            if (currentBox.textContent !== '?' && !currentBox.classList.contains('letter-correct')) {
+                console.log('🔄 REMPLACEMENT: Suppression automatique puis ajout de la nouvelle lettre');
+                // Supprimer d'abord le dernier caractère (la lettre actuelle)
+                if (this.currentInput.length > 0) {
+                    this.currentInput = this.currentInput.slice(0, -1);
+                    console.log('📝 Après suppression:', this.currentInput);
+                }
+            }
+            
+            console.log('✅ OK: On peut écrire');
+            this.currentInput += e.key;
+            console.log('📝 currentInput après:', this.currentInput);
+            this.handleInput(this.currentInput);
         }
     }
 
     handleInput(inputValue) {
+        console.log('🎮 === DÉBUT handleInput ===');
+        console.log('📥 inputValue reçu:', inputValue);
+        
         const letterBoxes = this.ui.domElements.wordDisplay.children;
         
         // Compter les lettres vertes consécutives
         const consecutiveGreenCount = this.wordManager.countConsecutiveGreenLetters(letterBoxes);
+        console.log('🟢 Lettres vertes dans handleInput:', consecutiveGreenCount);
         
         // Limiter la longueur
         let input = inputValue;
         if (input.length > this.currentWord.length) {
+            console.log('⚠️ Input trop long, tronqué');
             input = input.substring(0, this.currentWord.length);
             this.currentInput = input;
         }
@@ -146,20 +179,25 @@ class WordGuessingGame {
             for (let i = 0; i < consecutiveGreenCount; i++) {
                 greenLetters += letterBoxes[i].textContent;
             }
+            console.log('🟢 Lettres vertes extraites:', greenLetters);
             
             // Si l'input ne commence pas par les lettres vertes, le corriger
             if (!input.toUpperCase().startsWith(greenLetters)) {
+                console.log('🔧 Correction: ajout des lettres vertes au début');
                 input = greenLetters + input.substring(consecutiveGreenCount);
                 this.currentInput = input;
             }
             
             // Empêcher de supprimer les lettres vertes
             if (input.length < consecutiveGreenCount) {
+                console.log('❌ BLOQUÉ: Tentative de suppression des lettres vertes');
                 this.currentInput = this.previousInputValue || greenLetters;
                 this.ui.showFeedback('Tu ne peux pas supprimer les lettres vertes ! 🚫', 'warning');
                 return;
             }
         }
+        
+        console.log('📝 Input final après vérifications:', input);
         
         // Analyser la tentative
         let result = null;
@@ -169,6 +207,18 @@ class WordGuessingGame {
         
         // Mettre à jour l'affichage
         this.ui.updateLetterBoxes(input, result ? result.letterStates : null);
+        
+        // Vérifier si la lettre révélée par le hint a été trouvée
+        if (result && result.letterStates) {
+            for (let i = 0; i < result.letterStates.length; i++) {
+                if (result.letterStates[i] === 'correct') {
+                    // Une lettre est devenue verte, masquer le hint révélé
+                    this.hintManager.hideRevealedLetter();
+                    console.log('🎯 Lettre correcte trouvée → masquage du hint révélé');
+                    break;
+                }
+            }
+        }
         
         // Vérifier si le mot est trouvé
         if (input.length > 0 && this.wordManager.areAllLettersCorrect(letterBoxes)) {
@@ -181,6 +231,8 @@ class WordGuessingGame {
         this.provideFeedback(input, result);
         
         this.previousInputValue = input;
+        console.log('🎮 === FIN handleInput ===');
+        console.log('');
     }
 
     provideFeedback(input, result) {
@@ -207,10 +259,14 @@ class WordGuessingGame {
         
         this.isCurrentWordCorrect = true;
         this.ui.showVictoryEffect();
-        this.ui.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s ! Appuie sur Entrée ou clique sur "Nouveau Mot" ! 🎉`, 'success');
+        this.ui.showFeedback(`🎉 BRAVO ! Tu as trouvé "${this.currentWord.toUpperCase()}" en ${timeElapsed}s !`, 'success');
         this.ui.createCelebration();
         this.currentInput = '';
-        this.ui.enableNextWordButton();
+        
+        // Passer automatiquement au mot suivant après 2.5 secondes
+        setTimeout(() => {
+            this.newGame();
+        }, 2500);
     }
 
     handleWin() {
@@ -299,7 +355,6 @@ class WordGuessingGame {
         this.updateStats();
         this.ui.resetLetterBoxes();
         this.hintManager.resetHelp();
-        this.ui.disableNextWordButton();
     }
     
     // Gérer l'aide - révéler la prochaine lettre manquante

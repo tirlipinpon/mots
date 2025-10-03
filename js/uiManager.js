@@ -18,7 +18,6 @@ class UIManager {
             wordDisplay: document.getElementById('wordDisplay'),
             feedback: document.getElementById('feedback'),
             timer: document.getElementById('timer'),
-            newGameBtn: document.getElementById('newGameBtn'),
             starsDisplay: document.getElementById('starsDisplay'),
             scoreSection: document.getElementById('scoreSection'),
             difficultySection: document.querySelector('.difficulty-section'),
@@ -69,6 +68,9 @@ class UIManager {
             letterBox.textContent = '?';
             this.domElements.wordDisplay.appendChild(letterBox);
         }
+        
+        // Mettre le curseur sur la première boîte
+        this.updateCursor(0);
     }
     
     // Mettre à jour l'affichage des lettres
@@ -104,12 +106,93 @@ class UIManager {
                 letterBox.className = 'letter-box';
             }
         }
+        
+        // Mettre à jour le curseur visuel (calculer la vraie position)
+        this.updateCursorFromInput(input, letterBoxes);
+    }
+    
+    // Mettre à jour le curseur visuel basé sur l'input
+    updateCursorFromInput(input, letterBoxes) {
+        console.log('🎯 Mise à jour curseur - input:', input);
+        
+        // Retirer le curseur de toutes les boîtes
+        for (let i = 0; i < letterBoxes.length; i++) {
+            letterBoxes[i].classList.remove('letter-cursor');
+        }
+        
+        // Trouver la première boîte non-verte (rouge, orange, ou vide)
+        // On parcourt de gauche à droite
+        let targetPosition = -1;
+        
+        for (let i = 0; i < letterBoxes.length; i++) {
+            const box = letterBoxes[i];
+            const isGreen = box.classList.contains('letter-correct');
+            const isEmpty = box.textContent === '?';
+            const hasLetter = box.textContent !== '?';
+            
+            console.log(`Position ${i}: "${box.textContent}" - Verte:${isGreen}, Vide:${isEmpty}`);
+            
+            // On cherche la première boîte qui est :
+            // - Soit vide (?)
+            // - Soit avec une lettre incorrecte (rouge/orange)
+            if (!isGreen) {
+                targetPosition = i;
+                console.log(`📍 Curseur trouvé sur position ${i} (première non-verte)`);
+                break;
+            }
+        }
+        
+        // Si on a trouvé une position, ajouter le curseur
+        if (targetPosition !== -1 && targetPosition < letterBoxes.length) {
+            letterBoxes[targetPosition].classList.add('letter-cursor');
+            console.log('✅ Curseur ajouté sur position:', targetPosition);
+        } else {
+            console.log('⚠️ Aucune position valide - pas de curseur (toutes vertes?)');
+        }
+        
+        // Retourner la position pour l'utiliser dans game.js
+        return targetPosition;
+    }
+    
+    // Obtenir la position actuelle du curseur
+    getCursorPosition() {
+        const letterBoxes = this.domElements.wordDisplay.children;
+        for (let i = 0; i < letterBoxes.length; i++) {
+            if (letterBoxes[i].classList.contains('letter-cursor')) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    // Mettre à jour le curseur visuel (version simple pour reset)
+    updateCursor(currentPosition) {
+        const letterBoxes = this.domElements.wordDisplay.children;
+        
+        // Retirer le curseur de toutes les boîtes
+        for (let i = 0; i < letterBoxes.length; i++) {
+            letterBoxes[i].classList.remove('letter-cursor');
+        }
+        
+        // Trouver la prochaine position non-verte à partir de currentPosition
+        let targetPosition = currentPosition;
+        while (targetPosition < letterBoxes.length && 
+               letterBoxes[targetPosition].classList.contains('letter-correct')) {
+            targetPosition++;
+        }
+        
+        // Ajouter le curseur sur la prochaine position disponible
+        if (targetPosition < letterBoxes.length) {
+            letterBoxes[targetPosition].classList.add('letter-cursor');
+        }
     }
     
     // Afficher l'effet de victoire
     showVictoryEffect() {
         const letterBoxes = Array.from(this.domElements.wordDisplay.children);
         letterBoxes.forEach((letterBox, i) => {
+            // Retirer le curseur
+            letterBox.classList.remove('letter-cursor');
             setTimeout(() => {
                 if (letterBox && letterBox.classList) {
                     letterBox.classList.add('letter-victory');
@@ -161,21 +244,6 @@ class UIManager {
         }, 3000);
     }
     
-    // Activer/désactiver le bouton "Nouveau Mot"
-    enableNextWordButton() {
-        this.domElements.newGameBtn.disabled = false;
-        this.domElements.newGameBtn.style.opacity = '1';
-        this.domElements.newGameBtn.style.cursor = 'pointer';
-        this.domElements.newGameBtn.textContent = 'Nouveau Mot';
-    }
-    
-    disableNextWordButton() {
-        this.domElements.newGameBtn.disabled = true;
-        this.domElements.newGameBtn.style.opacity = '0.5';
-        this.domElements.newGameBtn.style.cursor = 'not-allowed';
-        this.domElements.newGameBtn.textContent = 'Trouve le mot d\'abord !';
-    }
-    
     // Méthode dépréciée - conservée pour compatibilité
     clearInput() {
         // Plus d'input à vider - géré par la variable interne dans game.js
@@ -194,6 +262,9 @@ class UIManager {
             letterBoxes[i].className = 'letter-box';
             letterBoxes[i].classList.remove('letter-victory');
         }
+        
+        // Remettre le curseur sur la première position
+        this.updateCursor(0);
     }
     
     // Afficher/masquer les sections selon l'état de connexion
