@@ -1,5 +1,33 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.6.6 (2025-10-03)
+
+### 🎯 Version stable - Système de catégories complet
+
+**Compilation de toutes les améliorations v1.5.x → v1.6.x** :
+
+✅ **Système de catégories** (v1.5.0-1.5.5)
+
+- 14 catégories avec 274 mots catégorisés
+- Liste déroulante dynamique avec compteurs de mots restants
+- Structure optimisée avec IDs numériques
+
+✅ **Support mobile optimal** (v1.5.6-1.6.5)
+
+- Input invisible pour clavier virtuel
+- Détection intelligente des conflits de focus
+- Menu déroulant et connexion fonctionnels
+
+✅ **Interface modernisée** (v1.5.8-1.6.4)
+
+- Badge de version visible
+- Boutons repositionnés logiquement
+- Messages d'aide simplifiés
+
+**Cette version est stable et prête pour utilisation !** 🚀
+
+---
+
 ## Version 1.6.5 (2025-10-03)
 
 ### 🐛 Correction : Menu déroulant des catégories sur mobile

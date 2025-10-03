@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.6.5
-const GAME_VERSION = '1.6.5';
+// Version: 1.6.6
+const GAME_VERSION = '1.6.6';
 
 class WordGuessingGame {
     constructor() {
