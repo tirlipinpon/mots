@@ -1,5 +1,130 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.4.2 (2025-10-03)
+
+### 🔊 Amélioration système de sons
+
+- ✅ Système de fallback automatique : si fichier MP3 absent → beep synthétique
+- ✅ Mode hybride : utilise fichiers audio quand disponibles, beeps sinon
+- ✅ Plus besoin d'avoir TOUS les fichiers, chaque son a son fallback
+- ✅ Messages console clairs si fichier introuvable
+- ✅ Expérience utilisateur fluide même sans fichiers audio
+
+### 💡 Exemple
+
+```javascript
+// Si letter-correct.mp3 existe → joue le MP3
+// Si letter-correct.mp3 n'existe pas → joue le beep 800Hz
+// L'utilisateur entend toujours un son !
+```
+
+---
+
+## Version 1.4.1 (2025-10-03)
+
+### 📝 Documentation améliorée
+
+- ✅ Commentaires détaillés dans `soundManager.js` pour chaque son
+- ✅ Explication des fréquences (Hz), durées (secondes) et formes d'onde
+- ✅ Indication précise du moment où chaque son est joué
+- ✅ Documentation musicale (notes correspondantes: Do, Mi, Sol, etc.)
+- ✅ Émojis visuels pour identifier rapidement chaque son
+
+---
+
+## Version 1.4.0 (2025-10-03)
+
+### 🎵 Nouvelle fonctionnalité majeure : Sons et effets sonores
+
+- ✅ Création de `soundManager.js` - Gestionnaire complet des sons
+- ✅ Sons générés avec Web Audio API (beeps synthétiques)
+- ✅ Dossier `sounds/` créé pour futurs fichiers audio
+- ✅ Bouton mute/unmute avec icône 🔊/🔇
+
+### 🔊 Sons implémentés
+
+- **Lettre correcte** (vert) : Ding aigu 800Hz
+- **Lettre mauvaise place** (orange) : Son moyen 400Hz
+- **Lettre incorrecte** (rouge) : Buzz grave 200Hz
+- **Mot trouvé** : Mélodie montante 3 notes
+- **Niveau complété** : Fanfare 4 notes
+- **Aide révélée** : Son mystérieux 500Hz
+- **Click bouton** : Petit beep 300Hz
+
+### 🎨 Interface
+
+- Bouton rond vert 🔊 (actif) / rouge 🔇 (muet)
+- Positionné à côté du bouton d'aide
+- Animation rotation au survol
+- Sauvegarde préférence dans localStorage
+
+### 🔧 Technique
+
+- Web Audio API pour génération en temps réel
+- Pas de latence
+- Volume réglable (50% par défaut)
+- Préférences persistantes
+- Gestion d'erreurs robuste
+
+---
+
+## Version 1.3.0 (2025-10-03)
+
+### 🏗️ Refactorisation majeure de l'architecture
+
+- ✅ Séparation de `game.js` (768 lignes → 400 lignes)
+- ✅ Création de `inputHandler.js` - Gestion du clavier et de la saisie
+- ✅ Création de `levelProgressionManager.js` - Gestion de la progression des niveaux
+- ✅ `game.js` devient un orchestrateur plus léger et maintenable
+
+### 📁 Nouvelle organisation
+
+```
+js/
+├── inputHandler.js              ← Capture clavier, traitement input
+├── levelProgressionManager.js   ← Progression, compteurs, niveaux
+└── game.js                      ← Orchestrateur principal (réduit)
+```
+
+### 💡 Avantages
+
+- Code plus modulaire et maintenable
+- Chaque fichier a une responsabilité claire
+- Plus facile à débugger
+- Facilite l'ajout de nouvelles fonctionnalités
+- Meilleure séparation des préoccupations
+
+### 🔧 Détails techniques
+
+**inputHandler.js** (170 lignes) :
+
+- `handleKeyPress()` - Gestion des touches
+- `handleInput()` - Traitement de l'input
+- `provideFeedback()` - Messages utilisateur
+- Protection des lettres vertes
+- Support du trait d'union
+
+**levelProgressionManager.js** (200 lignes) :
+
+- `handleLevelCompleted()` - Complétion niveau
+- `checkAllLevelsCompleted()` - Vérification globale
+- `getNextAvailableLevel()` - Niveau suivant
+- `switchToAvailableLevel()` - Changement auto
+- `updateDifficultyCounts()` - Compteurs
+- `setDifficulty()` - Changement manuel
+- `cleanupFoundWords()` - Nettoyage données
+- `updateDifficultyButtonsState()` - État boutons
+
+**game.js** (400 lignes) :
+
+- Orchestration générale
+- Gestion du flow du jeu
+- Stats et sauvegarde
+- Authentification
+- Préférences utilisateur
+
+---
+
 ## Version 1.2.2 (2025-10-03)
 
 ### 📊 Amélioration debug
@@ -7,6 +132,13 @@
 - ✅ Ajout d'un log stylisé affichant le mot actuel à deviner
 - Format : `🎯 MOT ACTUEL: "XXXX"` avec fond jaune et texte orange
 - Affiche aussi la longueur et le niveau du mot
+
+### 📝 Documentation
+
+- ✅ Création du fichier `SUGGESTIONS.md` avec toutes les idées d'améliorations futures
+- Catégories : Visuels, Gamification, Thèmes, Modes de jeu, Social, Éducatif, Personnalisation
+- Roadmap suggérée sur 3 mois
+- Top 5 priorités identifiées
 
 ---
 
