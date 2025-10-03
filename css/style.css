@@ -40,6 +40,14 @@ h1 {
     text-align: center;
 }
 
+.login-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 .login-form h3 {
     color: #2c5aa0;
     margin-bottom: 15px;
@@ -90,6 +98,7 @@ h1 {
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: inherit;
+    margin-left: 10px;
 }
 
 .btn-small:hover {
@@ -392,13 +401,17 @@ h1 {
 
 
 .hint-section {
-    background: linear-gradient(135deg, #fef5e7, #f6e05e);
-    border: 2px solid #f6e05e;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 15px;
     padding: 20px;
     margin: 20px 0;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
 }
 
 .hint-title {
@@ -424,7 +437,7 @@ h1 {
 }
 
 .revealed-letter {
-    font-size: 1.8em;
+    font-size: 1.5em;
     font-weight: bold;
     color: #667eea;
     background: linear-gradient(135deg, #e6f3ff, #b3d9ff);
@@ -433,7 +446,6 @@ h1 {
     padding: 15px 25px;
     margin: 10px auto;
     text-align: center;
-    max-width: 400px;
     animation: fadeInBounce 0.5s ease;
     box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
 }
@@ -458,6 +470,26 @@ h1 {
     align-items: center;
     gap: 15px;
     margin: 20px 0;
+    position: relative;
+}
+
+/* Input mobile - invisible mais fonctionnel pour déclencher le clavier */
+.mobile-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    top: -100px;
+    left: -100px;
+    opacity: 0;
+    z-index: -1;
+    font-size: 16px; /* Évite le zoom sur iOS */
+    pointer-events: none; /* Ne bloque rien */
+    border: none;
+    background: transparent;
+}
+
+.mobile-input:focus {
+    outline: none;
 }
 
 .word-display {
@@ -473,23 +505,25 @@ h1 {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 3px solid #667eea;
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
     color: white;
-    font-size: 1.8em;
+    font-size: 1.5em;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: inherit;
+    flex-shrink: 0;
 }
 
 .help-btn:hover {
-    transform: scale(1.1) rotate(15deg);
-    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.5);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(251, 191, 36, 0.4);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .help-btn:active {
@@ -497,7 +531,7 @@ h1 {
 }
 
 .help-btn.used {
-    opacity: 0.3;
+    opacity: 0.4;
     cursor: not-allowed;
     pointer-events: none;
 }
@@ -516,6 +550,8 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: inherit;
+    margin-right: 10px;
 }
 
 .sound-btn:hover {

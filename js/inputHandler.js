@@ -11,12 +11,106 @@ class InputHandler {
     // Configurer les événements clavier
     setupKeyboardListeners() {
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+        this.setupMobileInput();
+    }
+    
+    // Configuration spécifique pour mobile
+    setupMobileInput() {
+        const mobileInput = document.getElementById('mobileInput');
+        if (!mobileInput) return;
+        
+        // Auto-focus sur mobile au clic sur les letter boxes OU l'indice
+        const wordDisplay = document.getElementById('wordDisplay');
+        const hintSection = document.getElementById('hintSection');
+        
+        const focusMobile = () => {
+            if (this.isMobileDevice()) {
+                mobileInput.focus();
+            }
+        };
+        
+        if (wordDisplay) {
+            wordDisplay.addEventListener('click', focusMobile);
+        }
+        
+        if (hintSection) {
+            hintSection.addEventListener('click', focusMobile);
+        }
+        
+        // Focus aussi au clic sur la zone de feedback
+        const feedback = document.getElementById('feedback');
+        if (feedback) {
+            feedback.addEventListener('click', focusMobile);
+        }
+        
+        // Capturer l'input mobile
+        mobileInput.addEventListener('input', (e) => {
+            const value = e.target.value.toUpperCase();
+            
+            if (value.length > this.previousInputValue.length) {
+                // Nouvelle lettre ajoutée
+                const newLetter = value[value.length - 1];
+                if (/[A-Z-]/.test(newLetter)) {
+                    this.simulateKeyPress(newLetter);
+                }
+            } else if (value.length < this.previousInputValue.length) {
+                // Backspace
+                this.simulateBackspace();
+            }
+            
+            this.previousInputValue = value;
+            
+            // Réinitialiser l'input pour permettre de continuer la saisie
+            setTimeout(() => {
+                e.target.value = '';
+                this.previousInputValue = '';
+            }, 10);
+        });
+        
+        // Garder le focus sur mobile SEULEMENT si pas sur input/select
+        mobileInput.addEventListener('blur', () => {
+            const activeElement = document.activeElement;
+            const isLoginInput = activeElement && activeElement.id === 'usernameInput';
+            const isCategorySelect = activeElement && activeElement.id === 'categorySelect';
+            const isAnySelect = activeElement && activeElement.tagName === 'SELECT';
+            
+            if (this.isMobileDevice() && !this.game.isCurrentWordCorrect && !isLoginInput && !isCategorySelect && !isAnySelect) {
+                setTimeout(() => {
+                    // Vérifier à nouveau si on n'est pas sur un select ou input
+                    const nowActive = document.activeElement;
+                    const isStillLoginInput = nowActive && nowActive.id === 'usernameInput';
+                    const isStillSelect = nowActive && (nowActive.tagName === 'SELECT' || nowActive.id === 'categorySelect');
+                    
+                    if (!isStillLoginInput && !isStillSelect) {
+                        mobileInput.focus();
+                    }
+                }, 100);
+            }
+        });
+        
+        // NE PAS auto-focus au démarrage - attendre que l'utilisateur clique
+        // Cela permet de ne pas bloquer l'input de connexion
+    }
+    
+    isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+    }
+    
+    simulateKeyPress(letter) {
+        const e = { key: letter, preventDefault: () => {} };
+        this.handleKeyPress(e);
+    }
+    
+    simulateBackspace() {
+        const e = { key: 'Backspace', preventDefault: () => {} };
+        this.handleKeyPress(e);
     }
     
     // Gérer les touches du clavier
     handleKeyPress(e) {
-        // Ignorer les touches si un input est focus (login, etc.)
-        if (document.activeElement.tagName === 'INPUT') {
+        // Ignorer les touches si un input est focus (login, etc.) SAUF mobileInput
+        if (document.activeElement.tagName === 'INPUT' && document.activeElement.id !== 'mobileInput') {
             return;
         }
         
@@ -169,6 +263,15 @@ class InputHandler {
     reset() {
         this.currentInput = '';
         this.previousInputValue = '';
+        
+        // Réinitialiser et refocus sur mobile
+        const mobileInput = document.getElementById('mobileInput');
+        if (mobileInput && this.isMobileDevice()) {
+            mobileInput.value = '';
+            setTimeout(() => {
+                mobileInput.focus();
+            }, 100);
+        }
     }
     
     // Obtenir l'input actuel

@@ -8,12 +8,14 @@
 </head>
 <body>
     <div class="game-container">
+        <div class="version-badge" id="versionBadge">v0.0.0</div>
         <h1>🎮 Devine le Mot ! 🎮</h1>
         
         <div class="login-section">
             <div class="login-form">
                 <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
                 <button class="btn" id="loginBtn">Se connecter</button>
+                <button class="sound-btn" id="soundBtn" title="Activer/Désactiver les sons">🔊</button>
                 <div class="user-info hidden" id="userInfo">
                     <span>Connecté en tant que : <strong id="currentUser"></strong></span>
                     <button class="btn-small" id="logoutBtn">Déconnexion</button>
@@ -41,22 +43,32 @@
             </div>
         </div>
 
-
         <div class="hint-section" id="hintSection">
             <div class="hint-text" id="hintText">Animal domestique qui miaule et chasse les souris</div>
+            <button class="help-btn" id="helpBtn" title="Révéler une lettre">💡</button>
         </div>
 
         <div class="revealed-letter hidden" id="revealedLetter"></div>
 
         <div class="word-display-container">
+            <!-- Input caché pour déclencher le clavier mobile -->
+            <input type="text" 
+                   id="mobileInput" 
+                   class="mobile-input" 
+                   autocomplete="off" 
+                   autocorrect="off" 
+                   autocapitalize="off" 
+                   spellcheck="false"
+                   maxlength="20"
+                   placeholder="Tape ici..."
+                   aria-label="Zone de saisie pour mobile">
+            
             <div class="word-display" id="wordDisplay">
                 <div class="letter-box">?</div>
                 <div class="letter-box">?</div>
                 <div class="letter-box">?</div>
                 <div class="letter-box">?</div>
             </div>
-            <button class="help-btn" id="helpBtn" title="Révéler une lettre">?</button>
-            <button class="sound-btn" id="soundBtn" title="Activer/Désactiver les sons">🔊</button>
         </div>
 
         <!-- Passage automatique au mot suivant - pas de bouton nécessaire -->

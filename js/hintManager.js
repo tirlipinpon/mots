@@ -152,10 +152,10 @@ class HintManager {
         
         if (hintType === 'math') {
             const calculation = this.generateMathHint(letterPosition);
-            hintMessage = `💡lettre n°${position + 1} : Position dans l'alphabet = ${calculation}`;
+            hintMessage = `💡 Position dans l'alphabet = ${calculation}`;
         } else {
             const neighborHint = this.generateNeighborHint(letter);
-            hintMessage = `💡lettre n°${position + 1} : ${neighborHint}`;
+            hintMessage = `💡 ${neighborHint}`;
         }
         
         return hintMessage;

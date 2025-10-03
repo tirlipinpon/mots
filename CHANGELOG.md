@@ -1,5 +1,244 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.6.5 (2025-10-03)
+
+### 🐛 Correction : Menu déroulant des catégories sur mobile
+
+**Problème** :
+
+- Sur mobile, clic sur le menu déroulant → S'ouvre puis se ferme immédiatement
+- L'input mobile reprenait le focus automatiquement
+- Impossible de sélectionner une catégorie
+
+**Solution** :
+
+- ✅ Détection du focus sur `<select>` et `categorySelect`
+- ✅ L'input mobile ne reprend PAS le focus si un menu est ouvert
+- ✅ Le menu déroulant reste ouvert jusqu'à sélection
+- ✅ Fonctionne maintenant correctement sur iOS et Android
+
+**Éléments exclus du re-focus automatique** :
+
+- `usernameInput` (connexion)
+- `categorySelect` (menu des catégories)
+- Tous les éléments `<select>`
+
+---
+
+## Version 1.6.4 (2025-10-03)
+
+### 🎨 Amélioration : Message d'aide simplifié
+
+- ✅ Retrait du texte redondant "lettre n°X : "
+- Messages plus courts et clairs
+
+**Avant** :
+
+- `💡lettre n°3 : Position dans l'alphabet = 5 + 2`
+- `💡lettre n°1 : La lettre juste avant D`
+
+**Maintenant** :
+
+- `💡 Position dans l'alphabet = 5 + 2`
+- `💡 La lettre juste avant D`
+
+---
+
+## Version 1.6.3 (2025-10-03)
+
+### 🎨 Correction : Layout boutons simplifié
+
+- ✅ Bouton 🔊 : À côté du bouton "Se connecter" (dans login-section)
+- ✅ Bouton 💡 : À droite de l'indice (dans hint-section)
+- ✅ Chaque bouton reste dans sa section logique
+- ✅ Design rond pour les deux boutons (cohérence)
+- ✅ Pas de section .control-buttons inutile
+
+**Layout final** :
+
+```
+┌─────────────────────────┐
+│ [Nom] [Se connecter] [🔊] │  ← Son avec login
+└─────────────────────────┘
+┌─────────────────────────┐
+│  Indice du mot...  [💡] │  ← Aide avec indice
+└─────────────────────────┘
+```
+
+---
+
+## Version 1.6.2 (2025-10-03)
+
+### 🎨 Amélioration : Boutons de contrôle alignés
+
+- ✅ Boutons Aide (💡) et Son (🔊) alignés sur une même ligne
+- ✅ Design uniforme : Même taille, même style rectangulaire arrondi
+- ✅ Texte ajouté : "💡 Aide" et "🔊 Son" pour plus de clarté
+- ✅ Position centrale sous l'indice
+- ✅ Sections login et hint restent séparées (rollback v1.6.1)
+
+**Layout final** :
+
+```
+┌────────────────────┐
+│ [Nom] [Connecter]  │  Login
+└────────────────────┘
+┌────────────────────┐
+│  Indice du mot...  │  Hint
+└────────────────────┘
+   [💡 Aide] [🔊 Son]   ← Boutons alignés
+```
+
+---
+
+## Version 1.6.1 (2025-10-03)
+
+### 🎨 Amélioration : Layout optimisé en ligne
+
+- ✅ Section login et section indice alignées sur la même ligne horizontale
+- ✅ Gain d'espace vertical significatif
+- ✅ Interface plus compacte et moderne
+- ✅ Responsive : Empile verticalement sur mobile (< 768px)
+- ✅ Les deux sections ont la même hauteur (flex: 1)
+
+**Layout Desktop** :
+
+```
+┌─────────────────┬──────────────────────┐
+│ [🔊] [Nom] [Se] │ Indice...       [💡] │
+└─────────────────┴──────────────────────┘
+```
+
+**Layout Mobile** :
+
+```
+┌────────────────────┐
+│ [🔊] [Nom] [Se]    │
+├────────────────────┤
+│ Indice...     [💡] │
+└────────────────────┘
+```
+
+---
+
+## Version 1.6.0 (2025-10-03)
+
+### 🎨 Amélioration : Repositionnement du bouton son
+
+- ✅ Bouton son (🔊) déplacé à gauche de l'input de connexion
+- ✅ Toujours accessible, que tu sois connecté ou non
+- ✅ Plus logique : Contrôle global en haut, pas dans la zone de jeu
+- ✅ Interface plus épurée et organisée
+
+**Layout final** :
+
+```
+[🔊]  [Ton nom...]  [Se connecter]
+         ↑
+    Bouton son à gauche
+```
+
+---
+
+## Version 1.5.9 (2025-10-03)
+
+### 🎨 Amélioration : Repositionnement du bouton d'aide
+
+- ✅ Bouton d'aide (💡) déplacé à droite du texte d'indice
+- ✅ Intégré dans la `hint-section` avec l'indice
+- ✅ Nouveau design : Bouton arrondi au lieu de rond
+- ✅ Icône changée : ? → 💡 (plus intuitif)
+- ✅ Meilleure visibilité et accessibilité
+- ✅ Layout flexbox pour alignement parfait
+
+**Avant** : Bouton ? à côté des letter boxes  
+**Maintenant** : Bouton 💡 à droite de l'indice dans le cadre
+
+---
+
+## Version 1.5.8 (2025-10-03)
+
+### 🏷️ Amélioration : Badge de version visible
+
+- ✅ Badge de version affiché en haut à droite de l'écran
+- Style semi-transparent avec effet de verre (glassmorphism)
+- Tooltip au survol : "Version du jeu : 1.5.8"
+- Position fixe, ne gêne pas le gameplay
+- Design moderne et discret
+
+**Affichage** : `v1.5.8` dans un badge élégant en haut à droite 🏷️
+
+---
+
+## Version 1.5.7 (2025-10-03)
+
+### 🔧 Correction : Input mobile ne bloque plus les boutons
+
+**Problème de la v1.5.6** :
+
+- Input mobile couvrait tout le container
+- Bloquait les clics sur les boutons (?, 🔊)
+- Empêchait l'accès à l'input de connexion
+- Auto-focus gênant au démarrage
+
+**Solution v1.5.7** :
+
+- ✅ Input mobile positionné hors écran (1px × 1px)
+- ✅ Ne bloque AUCUN élément cliquable
+- ✅ Focus uniquement au **clic sur letter boxes, indice, ou feedback**
+- ✅ Pas d'auto-focus au démarrage (n'empêche plus la connexion)
+- ✅ Détecte l'input de connexion et n'interfère pas
+- ✅ Garde le focus pendant le jeu mais pas pendant la connexion
+
+**Fonctionnement amélioré** :
+
+1. **Connexion** : Clique sur input, tape ton nom → Pas d'interférence ✅
+2. **Boutons** : Clique sur ?, 🔊 → Fonctionnent normalement ✅
+3. **Jouer** : Clique sur les letter boxes → Clavier s'affiche ✅
+4. **Continuer** : Le focus reste automatiquement pendant le jeu ✅
+
+---
+
+## Version 1.5.6 (2025-10-03)
+
+### 📱 Correction : Support mobile amélioré
+
+**Problème** :
+
+- Sur mobile/tablette, impossible de faire focus après connexion
+- Le clavier virtuel ne s'affichait pas
+- Pas d'input HTML pour déclencher le clavier natif
+
+**Solution** :
+
+- ✅ Ajout d'un input invisible mais fonctionnel (`mobileInput`)
+- ✅ Détection automatique des appareils mobiles
+- ✅ Auto-focus au clic sur les letter boxes (mobile uniquement)
+- ✅ Clavier virtuel s'affiche automatiquement
+- ✅ Compatible iOS et Android
+- ✅ Garde le focus automatiquement pendant le jeu
+- ✅ Font-size 16px pour éviter le zoom sur iOS
+
+**Fonctionnement** :
+
+- Desktop : Clavier physique (inchangé)
+- Mobile : Input caché capture la saisie → simule les événements clavier
+- Transparent et non-intrusif pour l'utilisateur
+
+---
+
+## Version 1.5.5 (2025-10-03) - Mise à jour finale
+
+### 📝 Documentation : SUGGESTIONS.md mis à jour
+
+- ✅ Ajout section "Fonctionnalités Récemment Implémentées"
+- ✅ Marquage des catégories comme complétées (v1.5.0-1.5.5)
+- ✅ Marquage des sons comme complétés (v1.4.0-1.4.2)
+- ✅ Mise à jour de la roadmap avec statuts
+- ✅ 274 mots catégorisés documentés
+
+---
+
 ## Version 1.5.5 (2025-10-03)
 
 ### 🐛 Correction : Bug de reset des compteurs à la reconnexion

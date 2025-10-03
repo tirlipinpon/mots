@@ -12,6 +12,15 @@ class UIManager {
         };
     }
     
+    // Afficher la version dans l'UI
+    displayVersion(version) {
+        const versionBadge = document.getElementById('versionBadge');
+        if (versionBadge) {
+            versionBadge.textContent = `v${version}`;
+            versionBadge.title = `Version du jeu : ${version}`;
+        }
+    }
+    
     // Mettre en cache les éléments DOM
     cacheDOMElements() {
         this.domElements = {

@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.5.5
-const GAME_VERSION = '1.5.5';
+// Version: 1.6.5
+const GAME_VERSION = '1.6.5';
 
 class WordGuessingGame {
     constructor() {
@@ -40,6 +40,9 @@ class WordGuessingGame {
         this.bestStreak = 0;
         this.totalAttempts = 0;
         this.correctAttempts = 0;
+        
+        // Afficher la version dans l'UI
+        this.ui.displayVersion(GAME_VERSION);
         
         // Initialiser le jeu
         this.initializeGame();

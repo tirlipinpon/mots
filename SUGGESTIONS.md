@@ -1,16 +1,51 @@
 # 🎮 Suggestions d'Améliorations - Jeu de Devinette de Mots
 
+## ✅ **Fonctionnalités Récemment Implémentées**
+
+### **v1.5.0-1.5.5 : Système de Catégories** 🗂️
+
+- 14 catégories (Animaux, Nourriture, Nature, Sports, etc.)
+- Liste déroulante avec compteur dynamique de mots restants
+- Catégories complètes retirées automatiquement
+- 274 mots catégorisés (82 facile, 145 moyen, 47 difficile)
+- Structure optimisée avec IDs numériques
+
+### **v1.4.0-1.4.2 : Sons et Effets** 🔊
+
+- 7 sons différents (beeps synthétiques par défaut)
+- Support fichiers MP3 personnalisés avec fallback automatique
+- Bouton mute avec sauvegarde de préférence
+- Documentation complète (`sounds/README.md`)
+
+### **v1.3.x : Améliorations de Base**
+
+- Progression automatique entre les mots
+- Système de sauvegarde robuste (cookies + localStorage)
+- Niveau de difficulté avec boutons bloqués quand complétés
+- Support du trait d'union pour les mots composés
+
+---
+
 ## 🎨 **1. Visuels et Animations**
 
-### **Sons et effets sonores** 🔊 ✅ IMPLÉMENTÉ v1.4.0
+### **Sons et effets sonores** 🔊 ✅ **IMPLÉMENTÉ v1.4.0-1.4.2**
 
 - [x] Son de "ding" quand une lettre devient verte ✅
 - [x] Applaudissements quand un mot est trouvé 👏
 - [x] Musique de victoire quand un niveau est complété 🎵
 - [x] Son d'erreur doux quand lettre rouge ❌
 - [x] Option pour activer/désactiver les sons (bouton 🔊/🔇)
-- [ ] Ajouter de vrais fichiers audio MP3 (amélioration future)
+- [x] Système de fallback automatique (MP3 → beeps synthétiques) ✅ v1.4.2
+- [x] Support fichiers audio personnalisés (dossier `sounds/`) ✅ v1.4.2
 - [ ] Musique de fond en option
+
+**Fonctionnalités implémentées** :
+
+- ✅ Beeps synthétiques (Web Audio API) par défaut
+- ✅ Support fichiers MP3 personnalisés avec fallback automatique
+- ✅ Documentation complète (`sounds/README.md`)
+- ✅ Bouton mute avec sauvegarde de préférence
+- ✅ 7 sons différents : correctLetter, wrongLetter, wordFound, hint, levelCompleted, gameCompleted, click
 
 **Priorité:** ⭐⭐⭐⭐⭐ (Très haute) ✅ **TERMINÉ**
 **Difficulté:** 🟢 Facile
@@ -76,24 +111,36 @@
 
 ## 📚 **3. Organisation par Thèmes**
 
-### **Catégories de mots** 🗂️
+### **Catégories de mots** 🗂️ ✅ **IMPLÉMENTÉ v1.5.0-1.5.5**
 
-Au lieu de (ou en plus de) Facile/Moyen/Difficile, avoir :
+En plus de Facile/Moyen/Difficile, système de filtrage par catégorie :
 
-- [ ] 🐶 Animaux (chat, chien, lion, girafe...)
-- [ ] 🍎 Nourriture (pain, pizza, pomme...)
-- [ ] 🎨 Couleurs (rouge, bleu, vert...)
-- [ ] 🚗 Véhicules (auto, vélo, avion...)
-- [ ] 👨‍👩‍👧 Famille (papa, maman, fils...)
-- [ ] ⚽ Sports (foot, tennis, ski...)
-- [ ] 🌍 Nature (arbre, fleur, mer...)
-- [ ] 🦸 Super-héros (batman, spiderman...)
-- [ ] 🔢 Nombres (un, deux, trois...)
-- [ ] 📅 Temps (lundi, janvier, matin...)
-- [ ] 🏠 Maison (lit, table, porte...)
-- [ ] 😊 Émotions (joie, peur, amour...)
+- [x] 🐶 Animaux (chat, chien, lion, girafe...)
+- [x] 🍎 Nourriture (pain, pizza, pomme...)
+- [x] 🎨 Couleurs (rouge, bleu, vert...)
+- [x] 🚗 Véhicules (auto, vélo, avion...)
+- [x] 🦸 Personnages (roi, héros, batman, bob...)
+- [x] ⚽ Sports (foot, tennis, ski...)
+- [x] 🌍 Nature (arbre, fleur, mer...)
+- [x] 🔢 Nombres (un, deux, trois...)
+- [x] 📅 Temps (lundi, janvier, matin...)
+- [x] 🏠 Maison (lit, table, porte...)
+- [x] 😊 Émotions (joie, peur, amour...)
+- [x] 🧍 Corps (main, pied, tête, œil...)
+- [x] ⚔️ Objets (arc, épée, livre...)
+- [x] 📦 Toutes (tous les mots du niveau)
 
-**Priorité:** ⭐⭐⭐⭐⭐ (Très haute)
+**Fonctionnalités implémentées** :
+
+- ✅ Liste déroulante à droite des boutons de niveau
+- ✅ Compteur de mots restants : `🐶 Animaux (5)` → `(4)` → `(0)` → disparaît
+- ✅ Catégories complètes retirées automatiquement
+- ✅ Mise à jour en temps réel après chaque mot trouvé
+- ✅ Retour automatique à "Toutes" si catégorie complétée
+- ✅ Structure optimisée : 1 seul fichier à modifier pour ajouter un mot
+- ✅ 274 mots catégorisés (82 facile, 145 moyen, 47 difficile)
+
+**Priorité:** ⭐⭐⭐⭐⭐ (Très haute) ✅ **TERMINÉ**
 **Difficulté:** 🟡 Moyenne
 **Impact:** Aide à l'apprentissage thématique
 
@@ -347,9 +394,9 @@ Au lieu de (ou en plus de) Facile/Moyen/Difficile, avoir :
 ### **Features Moyennes** (1-3 jours de dev)
 
 - [ ] Système de badges complet
-- [ ] Sons et effets sonores
+- [x] Sons et effets sonores ✅ v1.4.0-1.4.2
 - [ ] Mode chrono
-- [ ] Organisation par thèmes
+- [x] Organisation par thèmes (catégories) ✅ v1.5.0-1.5.5
 
 ### **Grosses Features** (1+ semaine de dev)
 
@@ -376,19 +423,19 @@ Quand tu veux implémenter une fonctionnalité :
 
 ## 🎯 **Roadmap Suggérée**
 
-### **Phase 1 - Court Terme (Semaine 1-2)**
+### **Phase 1 - Court Terme (Semaine 1-2)** ✅ **EN COURS**
 
-- Sons et effets sonores
-- Système de badges de base
-- Animations améliorées
-- Plus de mots dans chaque niveau
+- [x] Sons et effets sonores ✅ v1.4.0-1.4.2
+- [ ] Système de badges de base
+- [ ] Animations améliorées
+- [x] Plus de mots dans chaque niveau ✅ (274 mots catégorisés)
 
-### **Phase 2 - Moyen Terme (Mois 1)**
+### **Phase 2 - Moyen Terme (Mois 1)** ✅ **EN COURS**
 
-- Organisation par thèmes
-- Avatars et personnalisation
-- Mode chrono et mode zen
-- Dictionnaire de base
+- [x] Organisation par thèmes ✅ v1.5.0-1.5.5
+- [ ] Avatars et personnalisation
+- [ ] Mode chrono et mode zen
+- [ ] Dictionnaire de base
 
 ### **Phase 3 - Long Terme (Mois 2-3)**
 
