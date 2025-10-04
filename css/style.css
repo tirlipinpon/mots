@@ -31,14 +31,7 @@ h1 {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
-.login-section {
-    background: linear-gradient(135deg, #e6f3ff, #b3d9ff);
-    border: 2px solid #4a90e2;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-}
+/* Styles déplacés dans .toggle-section */
 
 .login-form {
     display: flex;
@@ -110,20 +103,7 @@ h1 {
     display: none !important;
 }
 
-.difficulty-section {
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    border: 2px solid #0ea5e9;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.difficulty-section h3 {
-    color: #0c4a6e;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-}
+/* Styles déplacés dans .toggle-section */
 
 .difficulty-buttons {
     display: flex;
@@ -131,6 +111,12 @@ h1 {
     gap: 10px;
     flex-wrap: wrap;
     align-items: center;
+}
+
+/* Section catégories séparée */
+.category-section {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .category-select {
@@ -290,6 +276,59 @@ h1 {
 
 .toggle-header.active .toggle-icon {
     transform: rotate(45deg);
+}
+
+/* Sections compactes avec petit bouton */
+.compact-section {
+    position: relative;
+    margin: 20px 0;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.compact-section:hover {
+    border-color: #10b981;
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.15);
+}
+
+.compact-toggle-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.compact-toggle-btn:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: scale(1.1);
+}
+
+.compact-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.compact-content {
+    transition: all 0.3s ease;
 }
 
 .toggle-content {

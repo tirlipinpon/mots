@@ -1,5 +1,53 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.8.2 (2025-10-04)
+
+### 🎨 Amélioration : Design compact avec petits boutons
+
+**Modifications du design** :
+
+- ✅ Suppression des grosses entêtes vertes pour les sections Connexion et Difficulté
+- ✅ Petits boutons **−/+** discrets dans le coin supérieur droit
+- ✅ Gain de place important sur l'interface
+- ✅ Design minimaliste et élégant
+- ✅ Sections plus compactes et aérées
+
+**Avantages** :
+
+- 📏 Interface beaucoup plus compacte
+- 🎯 Focus sur le contenu essentiel
+- 📱 Meilleure utilisation de l'espace
+- ✨ Design moderne et épuré
+
+---
+
+## Version 1.8.1 (2025-10-04)
+
+### 🎨 Amélioration : Sections pliables avec boutons toggle
+
+**Améliorations de l'interface** :
+
+- ✅ Sections **Connexion** et **Difficulté** maintenant pliables comme la section Score
+- ✅ Ajout de boutons **−/+** dans le coin de chaque section pour les replier/déplier
+- ✅ **Sélecteur de catégories** sorti de la section difficulté pour être toujours visible
+- ✅ Design cohérent avec des boutons ronds et élégants
+- ✅ État des sections sauvegardé dans les préférences utilisateur
+
+**Sections concernées** :
+
+- 👤 Connexion - Section pliable
+- 🎯 Difficulté - Section pliable
+- 📊 Score et Statistiques - Section pliable (existant)
+
+**Avantages** :
+
+- 🎯 Interface plus propre et organisée
+- 📱 Gain de place sur petit écran
+- 💾 Préférences d'affichage mémorisées
+- 🗂️ Catégories toujours accessibles
+
+---
+
 ## Version 1.8.0 (2025-10-04)
 
 ### 🎯 Fonctionnalité : Système de révision automatique

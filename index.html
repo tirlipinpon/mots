@@ -11,36 +11,45 @@
         <div class="version-badge" id="versionBadge">v0.0.0</div>
         <h1>🎮 Devine le Mot ! 🎮</h1>
         
-        <div class="login-section">
-            <div class="login-form">
-                <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
-                <button class="btn" id="loginBtn">Se connecter</button>
-                <button class="sound-btn" id="soundBtn" title="Activer/Désactiver les sons">🔊</button>
-                <div class="user-info hidden" id="userInfo">
-                    <span>Connecté en tant que : <strong id="currentUser"></strong></span>
-                    <button class="btn-small" id="logoutBtn">Déconnexion</button>
+        <div class="compact-section" id="loginSection">
+            <button class="compact-toggle-btn" id="loginToggle" title="Replier/Déplier">−</button>
+            <div class="compact-content" id="loginContent">
+                <div class="login-form">
+                    <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
+                    <button class="btn" id="loginBtn">Se connecter</button>
+                    <button class="sound-btn" id="soundBtn" title="Activer/Désactiver les sons">🔊</button>
+                    <div class="user-info hidden" id="userInfo">
+                        <span>Connecté en tant que : <strong id="currentUser"></strong></span>
+                        <button class="btn-small" id="logoutBtn">Déconnexion</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="difficulty-section">
-            <div class="difficulty-buttons">
-                <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
-                    🟢 Facile
-                    <span class="words-count" id="easyCount">(0/0)</span>
-                </button>
-                <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
-                    🟠 Moyen
-                    <span class="words-count" id="mediumCount">(0/0)</span>
-                </button>
-                <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
-                    🔴 Difficile
-                    <span class="words-count" id="hardCount">(0/0)</span>
-                </button>
-                <select class="category-select" id="categorySelect">
-                    <option value="toutes">📦 Toutes</option>
-                </select>
+        <div class="compact-section" id="difficultySection">
+            <button class="compact-toggle-btn" id="difficultyToggle" title="Replier/Déplier">−</button>
+            <div class="compact-content" id="difficultyContent">
+                <div class="difficulty-buttons">
+                    <button class="btn difficulty-btn active" data-difficulty="easy" id="easyBtn">
+                        🟢 Facile
+                        <span class="words-count" id="easyCount">(0/0)</span>
+                    </button>
+                    <button class="btn difficulty-btn" data-difficulty="medium" id="mediumBtn">
+                        🟠 Moyen
+                        <span class="words-count" id="mediumCount">(0/0)</span>
+                    </button>
+                    <button class="btn difficulty-btn" data-difficulty="hard" id="hardBtn">
+                        🔴 Difficile
+                        <span class="words-count" id="hardCount">(0/0)</span>
+                    </button>
+                </div>
             </div>
+        </div>
+
+        <div class="category-section">
+            <select class="category-select" id="categorySelect">
+                <option value="toutes">📦 Toutes</option>
+            </select>
         </div>
 
         <div class="hint-section" id="hintSection">

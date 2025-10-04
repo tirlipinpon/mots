@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.8.0
-const GAME_VERSION = '1.8.0';
+// Version: 1.8.2
+const GAME_VERSION = '1.8.2';
 
 class WordGuessingGame {
     constructor() {
@@ -139,8 +139,10 @@ class WordGuessingGame {
         this.ui.domElements.mediumBtn.addEventListener('click', () => this.levelProgressionManager.setDifficulty('medium'));
         this.ui.domElements.hardBtn.addEventListener('click', () => this.levelProgressionManager.setDifficulty('hard'));
         
-        // Toggle score
+        // Toggles
         this.ui.domElements.scoreToggle.addEventListener('click', () => this.toggleSection('score'));
+        this.ui.domElements.loginToggle.addEventListener('click', () => this.toggleSection('login'));
+        this.ui.domElements.difficultyToggle.addEventListener('click', () => this.toggleSection('difficulty'));
         
         // Bouton d'aide
         this.hintManager.domElements.helpBtn.addEventListener('click', () => this.handleHelp());
@@ -470,18 +472,27 @@ class WordGuessingGame {
     }
 
     toggleSection(sectionName) {
-        const toggleHeader = document.getElementById(`${sectionName}Toggle`);
+        const toggleBtn = document.getElementById(`${sectionName}Toggle`);
         const toggleContent = document.getElementById(`${sectionName}Content`);
-        const toggleIcon = toggleHeader.querySelector('.toggle-icon');
+        
+        // Vérifier si c'est une section compacte ou une section toggle standard
+        const isCompactSection = toggleBtn && toggleBtn.classList.contains('compact-toggle-btn');
+        const toggleIcon = toggleBtn && !isCompactSection ? toggleBtn.querySelector('.toggle-icon') : null;
         
         if (toggleContent.classList.contains('hidden')) {
             toggleContent.classList.remove('hidden');
-            toggleHeader.classList.add('active');
-            toggleIcon.textContent = '−';
+            if (isCompactSection) {
+                toggleBtn.textContent = '−';
+            } else if (toggleIcon) {
+                toggleIcon.textContent = '−';
+            }
         } else {
             toggleContent.classList.add('hidden');
-            toggleHeader.classList.remove('active');
-            toggleIcon.textContent = '+';
+            if (isCompactSection) {
+                toggleBtn.textContent = '+';
+            } else if (toggleIcon) {
+                toggleIcon.textContent = '+';
+            }
         }
         
         this.saveUserPreferences();
@@ -525,22 +536,31 @@ class WordGuessingGame {
                 return;
             }
             
-            const toggleHeader = document.getElementById(`${sectionName}Toggle`);
+            const toggleBtn = document.getElementById(`${sectionName}Toggle`);
             const toggleContent = document.getElementById(`${sectionName}Content`);
             
-            if (!toggleHeader || !toggleContent) return;
+            if (!toggleBtn || !toggleContent) return;
             
-            const toggleIcon = toggleHeader.querySelector('.toggle-icon');
+            const isCompactSection = toggleBtn.classList.contains('compact-toggle-btn');
+            const toggleIcon = !isCompactSection ? toggleBtn.querySelector('.toggle-icon') : null;
             const isOpen = preferences.toggledSections[sectionName];
             
             if (isOpen) {
                 toggleContent.classList.remove('hidden');
-                toggleHeader.classList.add('active');
-                toggleIcon.textContent = '−';
+                if (isCompactSection) {
+                    toggleBtn.textContent = '−';
+                } else {
+                    if (toggleBtn.classList) toggleBtn.classList.add('active');
+                    if (toggleIcon) toggleIcon.textContent = '−';
+                }
             } else {
                 toggleContent.classList.add('hidden');
-                toggleHeader.classList.remove('active');
-                toggleIcon.textContent = '+';
+                if (isCompactSection) {
+                    toggleBtn.textContent = '+';
+                } else {
+                    if (toggleBtn.classList) toggleBtn.classList.remove('active');
+                    if (toggleIcon) toggleIcon.textContent = '+';
+                }
             }
         });
         
@@ -551,6 +571,8 @@ class WordGuessingGame {
     saveUserPreferences() {
         const preferences = {
             toggledSections: {
+                login: !this.ui.domElements.loginContent.classList.contains('hidden'),
+                difficulty: !this.ui.domElements.difficultyContent.classList.contains('hidden'),
                 score: !this.ui.domElements.scoreContent.classList.contains('hidden')
             },
             selectedDifficulty: this.currentDifficulty

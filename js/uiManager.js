@@ -29,7 +29,6 @@ class UIManager {
             timer: document.getElementById('timer'),
             starsDisplay: document.getElementById('starsDisplay'),
             scoreSection: document.getElementById('scoreSection'),
-            difficultySection: document.querySelector('.difficulty-section'),
             levelStatus: document.getElementById('levelStatus'),
             usernameInput: document.getElementById('usernameInput'),
             loginBtn: document.getElementById('loginBtn'),
@@ -38,6 +37,10 @@ class UIManager {
             currentUser: document.getElementById('currentUser'),
             scoreToggle: document.getElementById('scoreToggle'),
             scoreContent: document.getElementById('scoreContent'),
+            loginToggle: document.getElementById('loginToggle'),
+            loginContent: document.getElementById('loginContent'),
+            difficultyToggle: document.getElementById('difficultyToggle'),
+            difficultyContent: document.getElementById('difficultyContent'),
             // Boutons de difficulté
             easyBtn: document.getElementById('easyBtn'),
             mediumBtn: document.getElementById('mediumBtn'),
@@ -268,7 +271,6 @@ class UIManager {
     // Afficher/masquer les sections selon l'état de connexion
     updateVisibilityForLogin(isLoggedIn) {
         this.domElements.scoreSection.style.display = isLoggedIn ? 'block' : 'none';
-        this.domElements.difficultySection.style.display = isLoggedIn ? 'block' : 'none';
         
         if (isLoggedIn) {
             this.domElements.usernameInput.style.display = 'none';
