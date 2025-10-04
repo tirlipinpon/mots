@@ -208,6 +208,16 @@ class InputHandler {
         let result = null;
         if (input.length > 0) {
             result = this.game.wordManager.analyzeGuess(input, this.game.currentWord);
+            
+            // Détecter les erreurs (lettres rouges ou jaunes)
+            if (result && result.letterStates) {
+                for (const state of result.letterStates) {
+                    if (state === 'wrong' || state === 'wrong-place') {
+                        this.game.hasLetterErrors = true;
+                        break;
+                    }
+                }
+            }
         }
         
         // Mettre à jour l'affichage

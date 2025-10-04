@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.7.5
-const GAME_VERSION = '1.7.5';
+// Version: 1.8.0
+const GAME_VERSION = '1.8.0';
 
 class WordGuessingGame {
     constructor() {
@@ -45,6 +45,7 @@ class WordGuessingGame {
         this.attempts = 0;
         this.isCurrentWordCorrect = false;
         this.helpUsed = false;
+        this.hasLetterErrors = false; // Tracker si des lettres rouges/jaunes ont été tapées
         
         // Statistiques
         this.totalWordsFound = 0;
@@ -302,7 +303,14 @@ class WordGuessingGame {
     saveProgress() {
         console.log(`💾 Sauvegarde du mot "${this.currentWord}" (${this.currentDifficulty})`);
         
-        this.userManager.addWordFound(this.currentWord, this.currentDifficulty);
+        // Sauvegarder le mot UNIQUEMENT si aucune lettre rouge ou jaune n'a été tapée
+        if (!this.hasLetterErrors) {
+            console.log(`✅ Aucune erreur détectée - Mot enregistré dans le cookie`);
+            this.userManager.addWordFound(this.currentWord, this.currentDifficulty);
+        } else {
+            console.log(`⚠️ Erreurs détectées - Mot NON enregistré (pourra revenir plus tard)`);
+        }
+        
         this.userManager.updateStats({
             totalWordsFound: this.totalWordsFound,
             wordTimes: this.wordTimes,
@@ -338,6 +346,7 @@ class WordGuessingGame {
         
         this.isCurrentWordCorrect = false;
         this.helpUsed = false;
+        this.hasLetterErrors = false; // Réinitialiser le tracker d'erreurs pour le nouveau mot
         
         this.timer.stop();
         this.selectRandomWord();
