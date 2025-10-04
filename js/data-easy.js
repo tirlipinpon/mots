@@ -96,7 +96,6 @@ const DATA_EASY = {
     "épée": { hint: "⚔️ Arme brillante et pointue des chevaliers", cat: 12 },
     "phare": { hint: "🗼 Tour qui guide les bateaux", cat: 12 },
     "cage": { hint: "🔒 Prison pour animaux", cat: 12 },
-    "plume": { hint: "🪶 Ce qui couvre les oiseaux", cat: 12 },
     
     // Sports (13)
     "ski": { hint: "⛷️ Sport d'hiver sur la neige", cat: 13 },

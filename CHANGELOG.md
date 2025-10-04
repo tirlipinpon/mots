@@ -1,5 +1,31 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 1.8.0 (2025-10-04)
+
+### 🎯 Fonctionnalité : Système de révision automatique
+
+**Nouveau système de mémorisation des mots** :
+
+- ✅ Les mots trouvés **sans aucune erreur** (toutes vertes) sont enregistrés dans le cookie
+- ✅ Les mots trouvés **avec des erreurs** (au moins 1 lettre rouge ou jaune) ne sont PAS enregistrés
+- ✅ Les mots avec erreurs peuvent **revenir plus tard** pour être réessayés
+- ✅ Système de révision automatique pour améliorer l'apprentissage
+
+**Critère "sans erreur"** :
+
+- Un mot est considéré **sans erreur** si aucune lettre rouge ou jaune n'a jamais été tapée
+- Exemple : `C → vert, H → vert, A → vert, T → vert` ✅ Enregistré
+- Exemple : `C → vert, H → vert, U → rouge, [efface], A → vert, T → vert` ❌ PAS enregistré
+
+**Avantages** :
+
+- 🔄 Révision naturelle des mots difficiles
+- 🎓 Apprentissage renforcé par la répétition
+- 🎯 Motivation pour trouver du premier coup
+- 📊 Les mots ne sont définitivement "complétés" que s'ils sont trouvés parfaitement
+
+---
+
 ## Version 1.7.5 (2025-10-03)
 
 ### 🧮 Amélioration : Indices avec calculs sur lettres voisines
