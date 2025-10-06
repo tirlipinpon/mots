@@ -214,6 +214,54 @@ class UserManager {
         return this.currentUser;
     }
 
+    // Obtenir tous les utilisateurs existants
+    getAllUsers() {
+        const users = [];
+        const cookies = document.cookie.split(';');
+        
+        console.log('🍪 Cookies actuels:', document.cookie);
+        
+        cookies.forEach(cookie => {
+            const trimmedCookie = cookie.trim();
+            const [name, value] = trimmedCookie.split('=');
+            
+            if (name && name.startsWith('wordsByDifficulty_') && value) {
+                const username = name.replace('wordsByDifficulty_', '');
+                console.log(`👤 Utilisateur trouvé: ${username} (cookie: ${name})`);
+                if (!users.includes(username)) {
+                    users.push(username);
+                }
+            }
+        });
+        
+        // Aussi vérifier les cookies de stats
+        cookies.forEach(cookie => {
+            const trimmedCookie = cookie.trim();
+            const [name, value] = trimmedCookie.split('=');
+            
+            if (name && name.startsWith('stats_') && value) {
+                const username = name.replace('stats_', '');
+                console.log(`📊 Stats trouvées pour: ${username} (cookie: ${name})`);
+                if (!users.includes(username)) {
+                    users.push(username);
+                }
+            }
+        });
+        
+        console.log(`👥 Total utilisateurs trouvés: ${users.length}`, users);
+        return users.sort();
+    }
+
+    // Méthode de débogage pour afficher tous les cookies
+    debugCookies() {
+        console.log('🔍 DEBUG: Tous les cookies:');
+        const cookies = document.cookie.split(';');
+        cookies.forEach((cookie, index) => {
+            console.log(`${index + 1}. ${cookie.trim()}`);
+        });
+        return cookies;
+    }
+
     // Gestion des cookies
     setCookie(name, value, days) {
         const expires = new Date();

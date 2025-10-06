@@ -15,7 +15,12 @@
             <button class="compact-toggle-btn" id="loginToggle" title="Replier/Déplier">−</button>
             <div class="compact-content" id="loginContent">
                 <div class="login-form">
-                    <input type="text" id="usernameInput" placeholder="Ton nom..." maxlength="20">
+                    <div class="username-input-container">
+                        <select id="usernameSelect" class="username-select">
+                            <option value="">👤 Choisir un utilisateur existant</option>
+                        </select>
+                        <input type="text" id="usernameInput" placeholder="Ou saisir un nouveau nom..." maxlength="20">
+                    </div>
                     <button class="btn" id="loginBtn">Se connecter</button>
                     <button class="sound-btn" id="soundBtn" title="Activer/Désactiver les sons">🔊</button>
                     <div class="user-info hidden" id="userInfo">
