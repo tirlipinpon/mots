@@ -49,7 +49,7 @@ class UserManager {
         console.log('📂 Chargement des données pour:', this.currentUser);
 
         // Charger les mots trouvés par difficulté
-        const wordsByDifficultyCookie = this.getCookie(`wordsByDifficulty_${this.currentUser}`);
+        const wordsByDifficultyCookie = this.getCookie(`mots_game_wordsByDifficulty_${this.currentUser}`);
         if (wordsByDifficultyCookie) {
             try {
                 const loaded = JSON.parse(wordsByDifficultyCookie);
@@ -74,7 +74,7 @@ class UserManager {
         }
 
         // Charger les statistiques
-        const statsCookie = this.getCookie(`stats_${this.currentUser}`);
+        const statsCookie = this.getCookie(`mots_game_stats_${this.currentUser}`);
         if (statsCookie) {
             try {
                 const loaded = JSON.parse(statsCookie);
@@ -94,10 +94,10 @@ class UserManager {
         console.log('📝 Mots à sauvegarder:', this.wordsFoundByDifficulty);
 
         // Sauvegarder les mots trouvés par difficulté
-        this.setCookie(`wordsByDifficulty_${this.currentUser}`, JSON.stringify(this.wordsFoundByDifficulty), 365);
+        this.setCookie(`mots_game_wordsByDifficulty_${this.currentUser}`, JSON.stringify(this.wordsFoundByDifficulty), 365);
 
         // Sauvegarder les statistiques
-        this.setCookie(`stats_${this.currentUser}`, JSON.stringify(this.userStats), 365);
+        this.setCookie(`mots_game_stats_${this.currentUser}`, JSON.stringify(this.userStats), 365);
         
         console.log('✅ Sauvegarde terminée');
     }
@@ -152,8 +152,8 @@ class UserManager {
 
     // Vérifier si un utilisateur existe
     userExists(username) {
-        const wordsByDifficultyCookie = this.getCookie(`wordsByDifficulty_${username}`);
-        const statsCookie = this.getCookie(`stats_${username}`);
+        const wordsByDifficultyCookie = this.getCookie(`mots_game_wordsByDifficulty_${username}`);
+        const statsCookie = this.getCookie(`mots_game_stats_${username}`);
         return wordsByDifficultyCookie !== null || statsCookie !== null;
     }
 
@@ -224,16 +224,16 @@ class UserManager {
             const [name, value] = trimmedCookie.split('=');
             
             // Chercher les cookies de mots trouvés
-            if (name && name.startsWith('wordsByDifficulty_') && value) {
-                const username = name.replace('wordsByDifficulty_', '');
+            if (name && name.startsWith('mots_game_wordsByDifficulty_') && value) {
+                const username = name.replace('mots_game_wordsByDifficulty_', '');
                 if (!users.includes(username)) {
                     users.push(username);
                 }
             }
             
             // Aussi chercher les cookies de stats
-            if (name && name.startsWith('stats_') && value) {
-                const username = name.replace('stats_', '');
+            if (name && name.startsWith('mots_game_stats_') && value) {
+                const username = name.replace('mots_game_stats_', '');
                 if (!users.includes(username)) {
                     users.push(username);
                 }
@@ -268,12 +268,12 @@ class UserManager {
 
     // Sauvegarder les préférences utilisateur
     saveUserPreferences(preferences) {
-        this.setCookie('userPreferences', JSON.stringify(preferences), 365);
+        this.setCookie('mots_game_userPreferences', JSON.stringify(preferences), 365);
     }
 
     // Charger les préférences utilisateur
     getUserPreferences() {
-        const prefsCookie = this.getCookie('userPreferences');
+        const prefsCookie = this.getCookie('mots_game_userPreferences');
         if (prefsCookie) {
             return JSON.parse(prefsCookie);
         }

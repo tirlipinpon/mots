@@ -5,8 +5,8 @@ class SoundManager {
         this.sounds = {};
         this.volume = 0.5; // Volume par défaut (50%)
         this.useAudioFiles = false; // Mettre à true pour utiliser des fichiers audio
+        this.currentUser = null; // Utilisateur actuel pour les préférences
         
-        this.loadSoundPreferences();
         this.initializeSounds();
         
         console.log('🔊 SoundManager initialisé');
@@ -217,27 +217,43 @@ class SoundManager {
         return !this.isMuted;
     }
     
-    // Sauvegarder les préférences sonores
+    // Définir l'utilisateur actuel
+    setUser(username) {
+        this.currentUser = username;
+        if (username) {
+            this.loadSoundPreferences();
+        }
+    }
+
+    // Sauvegarder les préférences sonores (par utilisateur)
     saveSoundPreferences() {
+        if (!this.currentUser) return;
+        
         const preferences = {
             isMuted: this.isMuted,
             volume: this.volume
         };
-        localStorage.setItem('soundPreferences', JSON.stringify(preferences));
+        localStorage.setItem(`mots_game_soundPreferences_${this.currentUser}`, JSON.stringify(preferences));
     }
     
-    // Charger les préférences sonores
+    // Charger les préférences sonores (par utilisateur)
     loadSoundPreferences() {
-        const saved = localStorage.getItem('soundPreferences');
+        if (!this.currentUser) return;
+        
+        const saved = localStorage.getItem(`mots_game_soundPreferences_${this.currentUser}`);
         if (saved) {
             try {
                 const preferences = JSON.parse(saved);
                 this.isMuted = preferences.isMuted || false;
                 this.volume = preferences.volume || 0.5;
-                console.log('🔊 Préférences sonores chargées');
+                console.log('🔊 Préférences sonores chargées pour', this.currentUser);
             } catch (e) {
                 console.warn('⚠️ Erreur chargement préférences sonores:', e);
             }
+        } else {
+            // Valeurs par défaut
+            this.isMuted = false;
+            this.volume = 0.5;
         }
     }
 }

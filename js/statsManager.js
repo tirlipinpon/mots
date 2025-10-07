@@ -11,6 +11,7 @@ class StatsManager {
         this.perfectGames = 0;
         this.letterErrors = {};
         this.gameHistory = [];
+        this.currentUser = null; // Utilisateur actuel pour les stats
     }
 
     // Ajouter un mot trouvé avec ses statistiques
@@ -135,8 +136,20 @@ class StatsManager {
         return Math.min(...this.gameHistory.map(w => w.time));
     }
 
-    // Sauvegarder les statistiques
+    // Définir l'utilisateur actuel
+    setUser(username) {
+        this.currentUser = username;
+        if (username) {
+            this.loadStats();
+        } else {
+            this.resetStats();
+        }
+    }
+
+    // Sauvegarder les statistiques (par utilisateur)
     saveStats() {
+        if (!this.currentUser) return;
+        
         const stats = {
             totalGameTime: this.totalGameTime + this.getSessionTime(),
             wordsByDifficulty: this.wordsByDifficulty,
@@ -145,12 +158,14 @@ class StatsManager {
             gameHistory: this.gameHistory.slice(-100) // Garder seulement les 100 derniers
         };
         
-        localStorage.setItem('advancedStats', JSON.stringify(stats));
+        localStorage.setItem(`mots_game_advancedStats_${this.currentUser}`, JSON.stringify(stats));
     }
 
-    // Charger les statistiques
+    // Charger les statistiques (par utilisateur)
     loadStats() {
-        const saved = localStorage.getItem('advancedStats');
+        if (!this.currentUser) return;
+        
+        const saved = localStorage.getItem(`mots_game_advancedStats_${this.currentUser}`);
         if (saved) {
             const stats = JSON.parse(saved);
             this.totalGameTime = stats.totalGameTime || 0;
@@ -158,6 +173,13 @@ class StatsManager {
             this.perfectGames = stats.perfectGames || 0;
             this.letterErrors = stats.letterErrors || {};
             this.gameHistory = stats.gameHistory || [];
+        } else {
+            // Réinitialiser si aucune stat trouvée
+            this.totalGameTime = 0;
+            this.wordsByDifficulty = { easy: [], medium: [], hard: [] };
+            this.perfectGames = 0;
+            this.letterErrors = {};
+            this.gameHistory = [];
         }
     }
 
@@ -184,6 +206,8 @@ class StatsManager {
         this.letterErrors = {};
         this.gameHistory = [];
         this.sessionStartTime = Date.now();
-        localStorage.removeItem('advancedStats');
+        if (this.currentUser) {
+            localStorage.removeItem(`mots_game_advancedStats_${this.currentUser}`);
+        }
     }
 }
