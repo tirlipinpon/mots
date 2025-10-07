@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
 // Version: 1.8.3
-const GAME_VERSION = '1.8.4';
+const GAME_VERSION = '1.8.3';
 
 class WordGuessingGame {
     constructor() {
@@ -68,7 +68,7 @@ class WordGuessingGame {
         this.statsManager.loadStats();
         this.updateVisibility();
         this.updateCategorySelect();
-        this.updateUserList(); // Charger la liste des utilisateurs existants
+        this.updateUserList(); // Mettre à jour la liste des joueurs
     }
 
     initializeGame() {
@@ -135,9 +135,16 @@ class WordGuessingGame {
             if (e.key === 'Enter') this.handleLogin();
         });
         
-        // Gérer l'interaction entre la liste déroulante et l'input
-        this.ui.domElements.usernameSelect.addEventListener('change', () => this.ui.handleUserSelect());
-        this.ui.domElements.usernameInput.addEventListener('input', () => this.ui.handleUserInput());
+        // Événement pour la sélection d'un joueur dans la liste
+        this.ui.domElements.userSelect.addEventListener('change', (e) => {
+            const selectedUser = e.target.value;
+            if (selectedUser) {
+                console.log(`👤 Joueur sélectionné: ${selectedUser}`);
+                this.ui.domElements.usernameInput.value = selectedUser;
+                this.handleLogin();
+            }
+        });
+        
         
         // Boutons de difficulté
         this.ui.domElements.easyBtn.addEventListener('click', () => this.levelProgressionManager.setDifficulty('easy'));
@@ -399,14 +406,10 @@ class WordGuessingGame {
 
     // Gestion de la connexion
     handleLogin() {
-        const selectValue = this.ui.domElements.usernameSelect.value.trim();
-        const inputValue = this.ui.domElements.usernameInput.value.trim();
-        
-        // Priorité : sélection dans la liste, sinon input libre
-        const username = selectValue || inputValue;
+        const username = this.ui.domElements.usernameInput.value.trim();
         
         if (!username) {
-            this.ui.showFeedback('Veuillez choisir un utilisateur existant ou entrer un nouveau nom !', 'error');
+            this.ui.showFeedback('Veuillez entrer un nom !', 'error');
             return;
         }
         
@@ -416,13 +419,7 @@ class WordGuessingGame {
             this.ui.setCurrentUser(username);
             this.updateVisibility();
             this.updateLevelStatus();
-            
-            // Vider les champs après connexion réussie
-            this.ui.domElements.usernameSelect.value = '';
-            this.ui.domElements.usernameInput.value = '';
-            
-            // Mettre à jour la liste des utilisateurs pour refléter les changements
-            this.updateUserList();
+            this.updateUserList(); // Mettre à jour la liste (sans l'utilisateur connecté)
         } else {
             this.ui.showFeedback('Erreur lors de la connexion.', 'error');
         }
@@ -435,7 +432,7 @@ class WordGuessingGame {
         this.updateLevelStatus();
         this.levelProgressionManager.updateDifficultyCounts();
         this.updateCategorySelect(); // Réinitialiser la liste avec tous les mots (mode déconnecté)
-        this.updateUserList(); // Rafraîchir la liste des utilisateurs
+        this.updateUserList(); // Mettre à jour la liste des joueurs
         
         // Débloquer tous les boutons de difficulté
         ['easy', 'medium', 'hard'].forEach(difficulty => {
@@ -545,11 +542,12 @@ class WordGuessingGame {
         }, (seconds) => this.timer.formatTime(seconds));
     }
 
-    // Mettre à jour la liste des utilisateurs existants
+
+    // Mettre à jour la liste des utilisateurs
     updateUserList() {
-        const users = this.userManager.getAllUsers();
-        this.ui.updateUserList(users);
-        console.log(`👥 ${users.length} utilisateur(s) trouvé(s):`, users);
+        const allUsers = this.userManager.getAllUsers();
+        const currentUser = this.userManager.isLoggedIn() ? this.userManager.getCurrentUser() : null;
+        this.ui.updateUserList(allUsers, currentUser);
     }
 
     loadUserPreferences() {
@@ -629,46 +627,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Fonction de débogage pour créer un utilisateur de test
-    window.createTestUser = () => {
-        const testUsername = 'TestUser';
-        console.log(`🧪 Création d'un utilisateur de test: ${testUsername}`);
-        
-        // Créer des données de test
-        gameInstance.userManager.currentUser = testUsername;
-        gameInstance.userManager.wordsFoundByDifficulty = {
-            easy: ['CHAT', 'CHIEN'],
-            medium: ['VOITURE'],
-            hard: []
-        };
-        gameInstance.userManager.userStats = {
-            totalWordsFound: 3,
-            wordTimes: [15, 20, 25],
-            bestTime: 15,
-            currentStreak: 3,
-            bestStreak: 3,
-            totalAttempts: 3,
-            correctAttempts: 3,
-            stars: 9,
-            currentLevel: 2
-        };
-        
-        // Sauvegarder les données
-        gameInstance.userManager.saveUserData();
-        console.log('✅ Utilisateur de test créé et sauvegardé');
-        
-        // Mettre à jour la liste
-        gameInstance.updateUserList();
-        console.log('🔄 Liste des utilisateurs mise à jour');
-    };
-
-    // Fonction de débogage pour afficher tous les cookies
-    window.debugCookies = () => {
-        gameInstance.userManager.debugCookies();
-    };
     
-    console.log('💡 Astuces console:');
-    console.log('   - resetUserData() : Réinitialiser les données');
-    console.log('   - createTestUser() : Créer un utilisateur de test');
-    console.log('   - debugCookies() : Afficher tous les cookies');
+    console.log('💡 Astuce: Tape resetUserData() dans la console pour réinitialiser tes données');
 });

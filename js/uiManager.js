@@ -31,7 +31,7 @@ class UIManager {
             scoreSection: document.getElementById('scoreSection'),
             levelStatus: document.getElementById('levelStatus'),
             usernameInput: document.getElementById('usernameInput'),
-            usernameSelect: document.getElementById('usernameSelect'),
+            userSelect: document.getElementById('userSelect'),
             loginBtn: document.getElementById('loginBtn'),
             logoutBtn: document.getElementById('logoutBtn'),
             userInfo: document.getElementById('userInfo'),
@@ -389,61 +389,46 @@ class UIManager {
         this.domElements.currentUser.textContent = username;
     }
 
-    // Mettre à jour la liste des utilisateurs existants
-    updateUserList(users) {
-        const select = this.domElements.usernameSelect;
-        select.innerHTML = '<option value="">👤 Choisir un utilisateur existant</option>';
+    // Mettre à jour la liste des utilisateurs (sans l'utilisateur connecté)
+    updateUserList(allUsers, currentUser) {
+        const select = this.domElements.userSelect;
+        const input = this.domElements.usernameInput;
         
-        users.forEach(user => {
+        // Filtrer les utilisateurs (retirer celui qui est connecté)
+        const availableUsers = allUsers.filter(user => user !== currentUser);
+        
+        // Cas 1: Aucun utilisateur disponible → Masquer le select
+        if (availableUsers.length === 0) {
+            select.classList.add('hidden');
+            input.value = '';
+            input.placeholder = 'Ton nom...';
+            console.log('📋 Aucun utilisateur dans la liste');
+            return;
+        }
+        
+        // Cas 2: Un seul utilisateur → Pré-remplir l'input et masquer le select
+        if (availableUsers.length === 1) {
+            select.classList.add('hidden');
+            input.value = availableUsers[0];
+            input.placeholder = '';
+            console.log(`📋 Un seul utilisateur : ${availableUsers[0]} (pré-rempli)`);
+            return;
+        }
+        
+        // Cas 3: Plusieurs utilisateurs → Afficher le select
+        select.classList.remove('hidden');
+        input.value = '';
+        input.placeholder = 'Ton nom...';
+        
+        // Remplir la liste
+        select.innerHTML = '<option value="">👤 Choisir un joueur</option>';
+        availableUsers.forEach(user => {
             const option = document.createElement('option');
             option.value = user;
             option.textContent = `👤 ${user}`;
             select.appendChild(option);
         });
-    }
-
-    // Gérer la sélection d'un utilisateur existant
-    handleUserSelect() {
-        const select = this.domElements.usernameSelect;
-        const input = this.domElements.usernameInput;
         
-        // Si un utilisateur est sélectionné, vider l'input
-        if (select.value) {
-            input.value = '';
-            
-            // Si un utilisateur est déjà connecté et qu'on sélectionne un autre profil
-            if (window.gameInstance && window.gameInstance.userManager.isLoggedIn()) {
-                const currentUser = window.gameInstance.userManager.getCurrentUser();
-                const selectedUser = select.value.trim();
-                
-                if (currentUser !== selectedUser) {
-                    console.log(`🔄 Changement de profil: ${currentUser} → ${selectedUser}`);
-                    
-                    // Afficher un message de changement
-                    window.gameInstance.ui.showFeedback(`🔄 Changement de profil vers ${selectedUser}...`, 'info');
-                    
-                    // Déconnexion automatique
-                    window.gameInstance.handleLogout();
-                    
-                    // Connexion automatique au nouveau profil
-                    setTimeout(() => {
-                        window.gameInstance.ui.domElements.usernameInput.value = selectedUser;
-                        window.gameInstance.handleLogin();
-                        console.log(`✅ Connexion automatique à ${selectedUser}`);
-                    }, 500);
-                }
-            }
-        }
-    }
-
-    // Gérer la saisie libre dans l'input
-    handleUserInput() {
-        const select = this.domElements.usernameSelect;
-        const input = this.domElements.usernameInput;
-        
-        // Si on tape dans l'input, décocher la sélection
-        if (input.value.trim()) {
-            select.value = '';
-        }
+        console.log(`📋 ${availableUsers.length} utilisateurs dans la liste:`, availableUsers);
     }
 }
