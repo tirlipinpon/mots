@@ -79,16 +79,16 @@ const DATA_MEDIUM = {
     "train": { hint: "🚂 Véhicule sur des rails", cat: 4 },
     
     // Nombres (5)
-    "trois": { hint: "3️⃣ Trois", cat: 5 },
-    "quatre": { hint: "4️⃣ Quatre", cat: 5 },
-    "douze": { hint: "🔢 Douze (12)", cat: 5 },
-    "treize": { hint: "🔢 Treize (13)", cat: 5 },
-    "quinze": { hint: "🔢 Quinze (15)", cat: 5 },
-    "seize": { hint: "🔢 Seize (16)", cat: 5 },
-    "vingt": { hint: "🔢 Vingt (20)", cat: 5 },
-    "dix-sept": { hint: "🔢 Dix-sept (17)", cat: 5 },
-    "dix-huit": { hint: "🔢 Dix-huit (18)", cat: 5 },
-    "dix-neuf": { hint: "🔢 Dix-neuf (19)", cat: 5 },
+    "trois": { hint: "3️⃣ ", cat: 5 },
+    "quatre": { hint: "4️⃣ ", cat: 5 },
+    "douze": { hint: "🔢 (12)", cat: 5 },
+    "treize": { hint: "🔢 (13)", cat: 5 },
+    "quinze": { hint: "🔢 (15)", cat: 5 },
+    "seize": { hint: "🔢 (16)", cat: 5 },
+    "vingt": { hint: "🔢 (20)", cat: 5 },
+    "dix-sept": { hint: "🔢 (17)", cat: 5 },
+    "dix-huit": { hint: "🔢 (18)", cat: 5 },
+    "dix-neuf": { hint: "🔢 (19)", cat: 5 },
     
     // Temps (6)
     "lundi": { hint: "📅 Premier jour de la semaine", cat: 6 },

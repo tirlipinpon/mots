@@ -26,9 +26,32 @@ class UserManager {
             return false;
         }
 
-        this.currentUser = username.trim();
+        const trimmed = username.trim();
+        
+        // Chercher si un utilisateur existe déjà avec une casse différente
+        const existingUser = this.findExistingUser(trimmed);
+        
+        if (existingUser) {
+            // Utiliser le nom existant pour éviter les doublons
+            this.currentUser = existingUser;
+            console.log(`🔍 Utilisateur existant trouvé: "${existingUser}" (au lieu de "${trimmed}")`);
+        } else {
+            // Nouveau utilisateur : normaliser (première lettre majuscule, reste minuscule)
+            this.currentUser = trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+            console.log(`✨ Nouvel utilisateur créé: "${this.currentUser}"`);
+        }
+        
         this.loadUserData();
         return true;
+    }
+
+    // Trouver un utilisateur existant (insensible à la casse)
+    findExistingUser(username) {
+        const allUsers = this.getAllUsers();
+        const normalizedInput = username.toLowerCase();
+        
+        // Chercher un utilisateur qui correspond (insensible à la casse)
+        return allUsers.find(user => user.toLowerCase() === normalizedInput) || null;
     }
 
     // Déconnexion

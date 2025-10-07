@@ -41,12 +41,12 @@ const DATA_EASY = {
     "un": { hint: "1️⃣ Premier nombre", cat: 5 },
     "deux": { hint: "2️⃣ Nombre après un", cat: 5 },
     "cinq": { hint: "5️⃣ Le nombre entre 4 et 6", cat: 5 },
-    "six": { hint: "6️⃣ Six", cat: 5 },
-    "sept": { hint: "7️⃣ Sept", cat: 5 },
-    "huit": { hint: "8️⃣ Huit", cat: 5 },
-    "neuf": { hint: "9️⃣ Neuf", cat: 5 },
-    "dix": { hint: "🔟 Dix", cat: 5 },
-    "onze": { hint: "1️⃣1️⃣ Onze", cat: 5 },
+    "six": { hint: "6️⃣ ", cat: 5 },
+    "sept": { hint: "7️⃣ ", cat: 5 },
+    "huit": { hint: "8️⃣ ", cat: 5 },
+    "neuf": { hint: "9️⃣ ", cat: 5 },
+    "dix": { hint: "🔟 ", cat: 5 },
+    "onze": { hint: "1️⃣1️⃣ ", cat: 5 },
     "zéro": { hint: "0️⃣ Rien, le nombre nul", cat: 5 },
     
     // Temps (6)
