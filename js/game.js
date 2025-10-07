@@ -1,6 +1,6 @@
 // Jeu principal - Orchestrateur
-// Version: 1.8.3
-const GAME_VERSION = '1.8.3';
+// Version: 1.8.6
+const GAME_VERSION = '1.8.6';
 
 class WordGuessingGame {
     constructor() {
@@ -65,10 +65,14 @@ class WordGuessingGame {
         this.levelProgressionManager.updateDifficultyCounts();
         this.updateLevelStatus();
         this.loadUserPreferences();
-        this.statsManager.loadStats();
         this.updateVisibility();
         this.updateCategorySelect();
         this.updateUserList(); // Mettre à jour la liste des joueurs
+        
+        // Ouvrir loginSection si non connecté
+        if (!this.userManager.isLoggedIn()) {
+            this.ensureLoginSectionOpen();
+        }
     }
 
     initializeGame() {
@@ -414,6 +418,10 @@ class WordGuessingGame {
         }
         
         if (this.userManager.login(username)) {
+            // Définir l'utilisateur pour les managers
+            this.statsManager.setUser(username);
+            this.soundManager.setUser(username);
+            
             this.loadUserData(); // Charge les données (appelle déjà updateCategorySelect())
             this.ui.showFeedback(`Bienvenue ${username} ! Tes données ont été chargées.`, 'success');
             this.ui.setCurrentUser(username);
@@ -427,6 +435,11 @@ class WordGuessingGame {
 
     handleLogout() {
         this.userManager.logout();
+        
+        // Réinitialiser les managers
+        this.statsManager.setUser(null);
+        this.soundManager.setUser(null);
+        
         this.resetGameStats();
         this.updateVisibility();
         this.updateLevelStatus();
@@ -438,6 +451,9 @@ class WordGuessingGame {
         ['easy', 'medium', 'hard'].forEach(difficulty => {
             this.ui.enableDifficultyButton(difficulty);
         });
+        
+        // Ouvrir la section de connexion pour permettre une nouvelle connexion
+        this.ensureLoginSectionOpen();
         
         this.ui.showFeedback('Déconnexion réussie. Tes données sont sauvegardées.', 'info');
     }
@@ -550,6 +566,22 @@ class WordGuessingGame {
         this.ui.updateUserList(allUsers, currentUser);
     }
 
+    // S'assurer que la section de connexion est ouverte (pour utilisateur non connecté)
+    ensureLoginSectionOpen() {
+        const toggleBtn = document.getElementById('loginToggle');
+        const toggleContent = document.getElementById('loginContent');
+        
+        if (toggleBtn && toggleContent) {
+            // Ouvrir la section
+            toggleContent.classList.remove('hidden');
+            toggleBtn.textContent = '−';
+            console.log('📂 Section de connexion ouverte automatiquement');
+            
+            // Sauvegarder les préférences pour refléter ce changement
+            this.saveUserPreferences();
+        }
+    }
+
     loadUserPreferences() {
         const preferences = this.userManager.getUserPreferences();
         
@@ -591,6 +623,7 @@ class WordGuessingGame {
     }
 
     saveUserPreferences() {
+        // Sauvegarder les préférences globales (même si non connecté)
         const preferences = {
             toggledSections: {
                 login: !this.ui.domElements.loginContent.classList.contains('hidden'),
