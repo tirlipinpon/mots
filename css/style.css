@@ -22,6 +22,40 @@ body {
     text-align: center;
     max-width: 600px;
     width: 100%;
+    position: relative;
+}
+
+.home-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    z-index: 100;
+}
+
+.home-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.version-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.75em;
+    color: #999;
+    font-family: monospace;
+    pointer-events: none;
+    user-select: none;
+    z-index: 100;
 }
 
 h1 {
@@ -901,4 +935,60 @@ h1 {
 
 .hidden {
     display: none;
+}
+
+/* Media Queries pour mobile */
+@media (max-width: 768px) {
+    .home-button {
+        font-size: 0.8em;
+        padding: 6px 12px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .version-badge {
+        top: 10px;
+        right: 10px;
+        font-size: 0.7em;
+    }
+
+    h1 {
+        font-size: 1.8em;
+        margin-top: 10px;
+    }
+
+    /* Adapter les boîtes de lettres pour mobile */
+    .word-display {
+        font-size: 1.5em;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 0 10px;
+    }
+
+    .letter-box {
+        width: 40px;
+        height: 40px;
+        margin: 2px;
+        font-size: 1em;
+        border: 2px solid #e2e8f0;
+    }
+
+    /* Pour les mots de 7+ lettres, réduire encore plus */
+    .game-container {
+        padding: 15px;
+    }
+}
+
+/* Media queries pour très petits écrans (mots longs) */
+@media (max-width: 400px) {
+    .word-display {
+        font-size: 1.2em;
+    }
+
+    .letter-box {
+        width: 35px;
+        height: 35px;
+        margin: 1px;
+        font-size: 0.9em;
+    }
 }
