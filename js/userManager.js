@@ -1,7 +1,17 @@
 // Gestionnaire d'utilisateurs et de sauvegarde
 class UserManager {
     constructor() {
-        this.currentUser = null;
+        // Initialiser le SessionManager
+        this.sessionManager = new SessionManager();
+        
+        // Vérifier si une session existe déjà et restaurer l'utilisateur
+        if (this.sessionManager.isLoggedIn()) {
+            this.currentUser = this.sessionManager.getCurrentUser();
+            console.log(`🔄 Session restaurée automatiquement : ${this.currentUser}`);
+        } else {
+            this.currentUser = null;
+        }
+        
         this.wordsFoundByDifficulty = {
             easy: [],
             medium: [],
@@ -18,6 +28,11 @@ class UserManager {
             stars: 0,
             currentLevel: 1
         };
+        
+        // Charger les données si une session existe
+        if (this.currentUser) {
+            this.loadUserData();
+        }
     }
 
     // Connexion d'un utilisateur
@@ -41,6 +56,9 @@ class UserManager {
             console.log(`✨ Nouvel utilisateur créé: "${this.currentUser}"`);
         }
         
+        // Utiliser SessionManager pour créer la session
+        this.sessionManager.login(this.currentUser);
+        
         this.loadUserData();
         return true;
     }
@@ -56,6 +74,9 @@ class UserManager {
 
     // Déconnexion
     logout() {
+        // Utiliser SessionManager pour détruire la session
+        this.sessionManager.logout();
+        
         this.currentUser = null;
         this.wordsFoundByDifficulty = {
             easy: [],

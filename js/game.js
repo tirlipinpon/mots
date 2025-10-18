@@ -69,8 +69,24 @@ class WordGuessingGame {
         this.updateCategorySelect();
         this.updateUserList(); // Mettre à jour la liste des joueurs
         
-        // Ouvrir loginSection si non connecté
-        if (!this.userManager.isLoggedIn()) {
+        // Gérer l'état initial selon la connexion
+        if (this.userManager.isLoggedIn()) {
+            // Utilisateur déjà connecté (session restaurée)
+            const username = this.userManager.getCurrentUser();
+            console.log(`🎮 Démarrage avec session active : ${username}`);
+            
+            // Définir l'utilisateur pour les managers
+            this.statsManager.setUser(username);
+            this.soundManager.setUser(username);
+            
+            // Mettre à jour l'UI
+            this.ui.setCurrentUser(username);
+            this.updateVisibility();
+            
+            // Charger les données (déjà fait dans userManager constructor, mais on s'assure que l'UI est à jour)
+            this.updateUI();
+        } else {
+            // Pas de session = ouvrir la connexion
             this.ensureLoginSectionOpen();
         }
     }
