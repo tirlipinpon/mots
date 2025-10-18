@@ -1,5 +1,67 @@
 # Changelog - Jeu de Devinette de Mots
 
+## Version 2.0.0 (2025-10-18) 🎉
+
+### 🚀 NOUVELLE FONCTIONNALITÉ MAJEURE : SessionManager
+
+**Gestion intelligente des sessions utilisateur** :
+
+- ✅ **Session persistante au refresh (F5)** : Plus besoin de se reconnecter après un rafraîchissement !
+- ✅ **Déconnexion automatique à la fermeture d'onglet** : Sécurité améliorée
+- ✅ **Auto-restauration de session** : Reconnexion automatique au chargement si session active
+- ✅ **Partage entre applications** : Le nom d'utilisateur peut être partagé entre plusieurs apps
+- ✅ **Fichier réutilisable** : `sessionManager.js` peut être copié dans d'autres projets
+
+**Architecture technique** :
+
+- 📦 Nouveau fichier : `js/sessionManager.js` (autonome et réutilisable)
+- 🔧 Intégration dans `userManager.js` pour la gestion de connexion/déconnexion
+- 💾 Utilise `sessionStorage` + `localStorage` pour une gestion optimale
+- 🎮 Mise à jour de `game.js` pour gérer l'état initial de session
+
+**Comportements** :
+
+| Action                  | Session             | Données         |
+| ----------------------- | ------------------- | --------------- |
+| 🔄 Refresh (F5)         | ✅ Reste connecté   | ✅ Préservées   |
+| ❌ Fermer onglet        | ❌ Déconnexion auto | ✅ Sauvegardées |
+| 🚪 Déconnexion manuelle | ❌ Session fermée   | ✅ Sauvegardées |
+
+**Avantages** :
+
+- 🎯 Meilleure expérience utilisateur : plus besoin de se reconnecter constamment
+- 🔒 Sécurité : déconnexion automatique à la fermeture
+- 🔄 Fiabilité : gestion robuste des sessions avec fallback
+- 📚 Documentation : Guide de test complet inclus (`SESSION_TEST_GUIDE.md`)
+
+### 🔧 AMÉLIORATION : Cache Busting
+
+**Gestion automatique du cache navigateur** :
+
+- ✅ **Paramètres de version sur tous les fichiers** : `?v=2.0.0`
+- ✅ **Forcer le rechargement des nouveaux fichiers** : Plus besoin de vider le cache manuellement !
+- ✅ **Applicable au CSS et à tous les JS** : Couverture complète
+- ✅ **Simple à mettre à jour** : Changer seulement le numéro de version
+
+**Fichiers concernés** :
+
+- 🎨 `css/style.css?v=2.0.0`
+- 📦 Tous les fichiers JS avec paramètre de version
+- 🔄 Automatiquement mis à jour à chaque nouvelle version
+
+**Avantages** :
+
+- 🚀 Déploiement simplifié : les utilisateurs voient les mises à jour immédiatement
+- 📱 Fonctionne sur PC et mobile
+- 💾 Pas besoin de vider le cache manuellement
+- ✨ Expérience utilisateur améliorée
+
+**Comment ça marche** :
+
+À chaque mise à jour, changez simplement le numéro de version dans `game.js`, et tous les fichiers seront rechargés automatiquement par le navigateur !
+
+---
+
 ## Version 1.8.2 (2025-10-04)
 
 ### 🎨 Amélioration : Design compact avec petits boutons
